@@ -1,27 +1,46 @@
-require('dotenv').config()
 const express = require('express')
+const mongoose = require('mongoose')
 const cors = require('cors')
-const helmet = require('helmet')
-const morgan = require('morgan')
-const cookieParser = require('cookie-parser')
+const dotenv = require('dotenv')
+const http = require('http')
 
+dotenv.config()
+
+console.log('📋 Environment variables loaded:')
+console.log('PORT:', process.env.PORT)
+console.log('MONGO_URI:', process.env.MONGO_URI)
+console.log('CLIENT_URL:', process.env.CLIENT_URL)
 const app = express()
-const PORT = process.env.PORT || 5000
+const server = http.createServer(app)
 
 // Middleware
-app.use(helmet())
-app.use(cors())
-app.use(morgan('dev'))
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
 
-// Routes
+// Test route
 app.get('/', (req, res) => {
-  res.json({ message: 'Backend server is running!' })
+  res.json({ message: '🎓 UNI-KADE API is running!' })
 })
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+// MongoDB connect + start server
+const PORT = process.env.PORT || 5000
+
+console.log('🔗 Attempting MongoDB connection...')
+console.log('Connection string:', process.env.MONGO_URI)
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('✅ MongoDB connected successfully')
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`)
+    })
+  })
+  .catch((err) => {
+    console.error('❌ MongoDB connection failed')
+    console.error('Error code:', err.code)
+    console.error('Error message:', err.message)
+    console.error('Full error:', err)
+    process.exit(1)
+  })
