@@ -1,0 +1,22 @@
+{
+  "name": "uni-kade",
+  "version": "1.0.0",
+  "description": "Full-stack application with frontend and backend",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
+    "dev:frontend": "npm run dev -w frontend",
+    "dev:backend": "npm run dev -w backend",
+    "build": "npm run build -w frontend && npm run build -w backend",
+    "build:frontend": "npm run build -w frontend",
+    "lint": "npm run lint -w frontend",
+    "install": "npm install && npm install -w frontend && npm install -w backend"
+  },
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
