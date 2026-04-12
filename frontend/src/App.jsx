@@ -1,13 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Landing from './pages/Landing'
 import Login from './pages/auth/Login'
+import Register from './pages/auth/Register'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
-        {/* We add more routes here next */}
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   )
