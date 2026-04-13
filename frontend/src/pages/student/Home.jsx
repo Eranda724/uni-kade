@@ -2,43 +2,170 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
+// ─── Mock Data ────────────────────────────────────────────────
 const MOCK_SHOPS = [
-  { id: 1, name: "Mama's Kitchen", category: 'Food', university: 'University of Moratuwa', rating: 4.8, products: 12, icon: '🍱' },
-  { id: 2, name: 'Campus Prints', category: 'Printing', university: 'University of Moratuwa', rating: 4.6, products: 8, icon: '🖨️' },
-  { id: 3, name: 'NoteHub', category: 'Stationery', university: 'University of Moratuwa', rating: 4.5, products: 24, icon: '📚' },
-  { id: 4, name: 'Quick Bites', category: 'Food', university: 'University of Moratuwa', rating: 4.7, products: 9, icon: '🥗' },
-  { id: 5, name: 'Lab Mart', category: 'Lab Equipment', university: 'University of Moratuwa', rating: 4.3, products: 31, icon: '🔬' },
+  {
+    id: 1,
+    name: "Mama's Kitchen",
+    category: 'Food',
+    university: 'University of Moratuwa',
+    rating: 4.8,
+    products: 12,
+    isOpen: true,
+    icon: '🍱',
+  },
+  {
+    id: 2,
+    name: 'Campus Prints',
+    category: 'Printing',
+    university: 'University of Moratuwa',
+    rating: 4.6,
+    products: 8,
+    isOpen: true,
+    icon: '🖨️',
+  },
+  {
+    id: 3,
+    name: 'NoteHub',
+    category: 'Stationery',
+    university: 'University of Moratuwa',
+    rating: 4.5,
+    products: 24,
+    isOpen: false,
+    icon: '📚',
+  },
+  {
+    id: 4,
+    name: 'Quick Bites',
+    category: 'Food',
+    university: 'University of Moratuwa',
+    rating: 4.7,
+    products: 9,
+    isOpen: true,
+    icon: '🥗',
+  },
+  {
+    id: 5,
+    name: 'Lab Mart',
+    category: 'Lab Equipment',
+    university: 'University of Moratuwa',
+    rating: 4.3,
+    products: 31,
+    isOpen: false,
+    icon: '🔬',
+  },
 ]
 
 const MOCK_FEATURED = [
-  { id: 1, name: 'Rice & Curry', shop: "Mama's Kitchen", price: 190, icon: '🍛' },
-  { id: 2, name: 'A4 Paper (500 sheets)', shop: 'NoteHub', price: 450, icon: '📄' },
-  { id: 3, name: 'Color Print (A4)', shop: 'Campus Prints', price: 25, icon: '🖨️' },
-  { id: 4, name: 'Kottu Roti', shop: 'Quick Bites', price: 250, icon: '🥘' },
+  {
+    id: 1,
+    name: 'Rice & Curry',
+    shop: "Mama's Kitchen",
+    price: 190,
+    icon: '🍛',
+    category: 'Food',
+  },
+  {
+    id: 2,
+    name: 'A4 Paper (500 sheets)',
+    shop: 'NoteHub',
+    price: 450,
+    icon: '📄',
+    category: 'Stationery',
+  },
+  {
+    id: 3,
+    name: 'Color Print (A4)',
+    shop: 'Campus Prints',
+    price: 25,
+    icon: '🖨️',
+    category: 'Printing',
+  },
+  {
+    id: 4,
+    name: 'Kottu Roti',
+    shop: 'Quick Bites',
+    price: 250,
+    icon: '🥘',
+    category: 'Food',
+  },
 ]
 
 const CATEGORIES = ['All', 'Food', 'Stationery', 'Printing', 'Lab Equipment']
 
+// ─── Helpers ──────────────────────────────────────────────────
+const S = {
+  card: {
+    background: '#fff',
+    borderRadius: 18,
+    border: '1px solid #F3F4F6',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
+    cursor: 'pointer',
+    transition: 'transform 0.15s, box-shadow 0.15s',
+  },
+  label: {
+    fontSize: 11,
+    fontWeight: 700,
+    color: '#6B7280',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  badge: (bg, color) => ({
+    background: bg,
+    color,
+    padding: '3px 10px',
+    borderRadius: 7,
+    fontSize: 12,
+    fontWeight: 700,
+  }),
+}
+
+function lift(e) {
+  e.currentTarget.style.transform = 'translateY(-4px)'
+  e.currentTarget.style.boxShadow = '0 10px 28px rgba(0,0,0,0.1)'
+}
+function drop(e) {
+  e.currentTarget.style.transform = 'translateY(0)'
+  e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.04)'
+}
+
+// ─── Component ────────────────────────────────────────────────
 export default function StudentHome() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [catFilter, setCatFilter] = useState('All')
+  const [cart, setCart] = useState([]) // { id, name, price, qty }
 
+  // ── Derived ────────────────────────────────────────────────
   const filtered = MOCK_SHOPS.filter(
     (s) =>
       (catFilter === 'All' || s.category === catFilter) &&
-      s.name.toLowerCase().includes(search.toLowerCase())
+      s.name.toLowerCase().includes(search.toLowerCase()),
   )
+
+  const cartCount = cart.reduce((sum, i) => sum + i.qty, 0)
+
+  const addToCart = (item) => {
+    setCart((prev) => {
+      const found = prev.find((i) => i.id === item.id)
+      if (found)
+        return prev.map((i) =>
+          i.id === item.id ? { ...i, qty: i.qty + 1 } : i,
+        )
+      return [...prev, { ...item, qty: 1 }]
+    })
+  }
 
   return (
     <div style={{ fontFamily: 'Poppins, sans-serif' }}>
-      {/* Welcome banner */}
+      {/* ── Welcome Banner ──────────────────────────────────── */}
       <div
         style={{
           background: 'linear-gradient(135deg,#1a5c3a,#2d8a57)',
           borderRadius: 20,
           padding: '28px 32px',
-          marginBottom: 32,
+          marginBottom: 28,
           color: '#fff',
           display: 'flex',
           alignItems: 'center',
@@ -56,35 +183,100 @@ export default function StudentHome() {
             Browse shops and order from your campus canteen.
           </p>
         </div>
-        <div style={{ fontSize: 64 }}>🍱</div>
+
+        {/* Cart bubble */}
+        <div
+          onClick={() => navigate('/student/cart')}
+          style={{
+            position: 'relative',
+            cursor: 'pointer',
+            background: 'rgba(255,255,255,0.15)',
+            borderRadius: 16,
+            padding: '14px 20px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 4,
+          }}
+        >
+          <span style={{ fontSize: 32 }}>🛒</span>
+          <span style={{ fontSize: 12, fontWeight: 700 }}>
+            {cartCount > 0
+              ? `${cartCount} item${cartCount > 1 ? 's' : ''}`
+              : 'Cart'}
+          </span>
+          {cartCount > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                top: -6,
+                right: -6,
+                width: 22,
+                height: 22,
+                borderRadius: '50%',
+                background: '#f5a623',
+                color: '#fff',
+                fontSize: 11,
+                fontWeight: 800,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {cartCount}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Search + Category filter */}
-      <div style={{ display: 'flex', gap: 14, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
-        <input
-          style={{
-            height: 44,
-            border: '1.5px solid #E5E7EB',
-            borderRadius: 12,
-            padding: '0 16px',
-            fontSize: 14,
-            fontFamily: 'Poppins',
-            outline: 'none',
-            background: '#fff',
-            color: '#1F2937',
-            width: 260,
-          }}
-          placeholder="🔍  Search shops or items..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      {/* ── Search + Filter ─────────────────────────────────── */}
+      <div
+        style={{
+          display: 'flex',
+          gap: 14,
+          marginBottom: 28,
+          flexWrap: 'wrap',
+          alignItems: 'center',
+        }}
+      >
+        <div style={{ position: 'relative' }}>
+          <span
+            style={{
+              position: 'absolute',
+              left: 14,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              fontSize: 16,
+            }}
+          >
+            🔍
+          </span>
+          <input
+            style={{
+              height: 44,
+              border: '1.5px solid #E5E7EB',
+              borderRadius: 12,
+              padding: '0 16px 0 40px',
+              fontSize: 14,
+              fontFamily: 'Poppins',
+              outline: 'none',
+              background: '#fff',
+              color: '#1F2937',
+              width: 260,
+            }}
+            placeholder="Search shops or items..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {CATEGORIES.map((c) => (
             <button
               key={c}
               onClick={() => setCatFilter(c)}
               style={{
-                padding: '7px 14px',
+                padding: '7px 16px',
                 borderRadius: 9,
                 border: catFilter === c ? 'none' : '1.5px solid #E5E7EB',
                 background: catFilter === c ? '#f5a623' : '#fff',
@@ -101,39 +293,77 @@ export default function StudentHome() {
         </div>
       </div>
 
-      {/* Featured Items */}
+      {/* ── Featured Items ───────────────────────────────────── */}
       <section style={{ marginBottom: 36 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1F2937', marginBottom: 16 }}>
-          ✨ Popular Right Now
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 16,
+          }}
+        >
+          <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1F2937' }}>
+            ✨ Popular Right Now
+          </h2>
+          <span
+            style={{
+              fontSize: 13,
+              color: '#f5a623',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            See all →
+          </span>
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+            gap: 16,
+          }}
+        >
           {MOCK_FEATURED.map((item) => (
             <div
               key={item.id}
-              style={{
-                background: '#fff',
-                borderRadius: 16,
-                padding: '20px 18px',
-                border: '1px solid #F3F4F6',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
-                cursor: 'pointer',
-                transition: 'transform 0.15s, box-shadow 0.15s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-3px)'
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.1)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.04)'
-              }}
+              style={{ ...S.card, padding: '20px 18px' }}
+              onMouseEnter={lift}
+              onMouseLeave={drop}
             >
-              <div style={{ fontSize: 36, textAlign: 'center', marginBottom: 10 }}>{item.icon}</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#1F2937', marginBottom: 3 }}>{item.name}</div>
-              <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 10 }}>{item.shop}</div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 15, fontWeight: 800, color: '#1a5c3a' }}>Rs. {item.price}</span>
+              <div
+                style={{ fontSize: 40, textAlign: 'center', marginBottom: 10 }}
+              >
+                {item.icon}
+              </div>
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: '#1F2937',
+                  marginBottom: 3,
+                }}
+              >
+                {item.name}
+              </div>
+              <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 12 }}>
+                {item.shop}
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span
+                  style={{ fontSize: 15, fontWeight: 800, color: '#1a5c3a' }}
+                >
+                  Rs. {item.price}
+                </span>
                 <button
+                  onClick={() => addToCart(item)}
                   style={{
                     background: '#f5a623',
                     border: 'none',
@@ -146,7 +376,7 @@ export default function StudentHome() {
                     fontFamily: 'Poppins',
                   }}
                 >
-                  Order
+                  + Add
                 </button>
               </div>
             </div>
@@ -154,92 +384,177 @@ export default function StudentHome() {
         </div>
       </section>
 
-      {/* Shops */}
+      {/* ── Campus Shops ────────────────────────────────────── */}
       <section>
-        <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1F2937', marginBottom: 16 }}>
-          🏪 Campus Shops
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-          {filtered.map((shop) => (
-            <div
-              key={shop.id}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 16,
+          }}
+        >
+          <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1F2937' }}>
+            🏪 Campus Shops
+            <span
               style={{
-                background: '#fff',
-                borderRadius: 18,
-                padding: '24px 20px',
-                border: '1px solid #F3F4F6',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
-                cursor: 'pointer',
-                transition: 'transform 0.15s, box-shadow 0.15s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-4px)'
-                e.currentTarget.style.boxShadow = '0 10px 28px rgba(0,0,0,0.1)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.04)'
+                marginLeft: 10,
+                fontSize: 13,
+                fontWeight: 600,
+                color: '#9CA3AF',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
+              ({filtered.length})
+            </span>
+          </h2>
+        </div>
+
+        {filtered.length === 0 ? (
+          // ── Empty state ──
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '60px 20px',
+              background: '#F8F9FC',
+              borderRadius: 20,
+            }}
+          >
+            <div style={{ fontSize: 48, marginBottom: 12 }}>🔍</div>
+            <p
+              style={{
+                fontSize: 16,
+                fontWeight: 700,
+                color: '#1F2937',
+                marginBottom: 6,
+              }}
+            >
+              No shops found
+            </p>
+            <p style={{ fontSize: 14, color: '#9CA3AF', marginBottom: 20 }}>
+              Try a different search or category filter.
+            </p>
+            <button
+              onClick={() => {
+                setSearch('')
+                setCatFilter('All')
+              }}
+              style={{
+                background: '#f5a623',
+                border: 'none',
+                borderRadius: 10,
+                color: '#fff',
+                padding: '10px 24px',
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: 'pointer',
+                fontFamily: 'Poppins',
+              }}
+            >
+              Clear Filters
+            </button>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+              gap: 20,
+            }}
+          >
+            {filtered.map((shop) => (
+              <div
+                key={shop.id}
+                style={{ ...S.card, padding: '24px 20px' }}
+                onMouseEnter={lift}
+                onMouseLeave={drop}
+              >
                 <div
                   style={{
-                    width: 52,
-                    height: 52,
-                    borderRadius: 14,
-                    background: '#e8f5e9',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 26,
-                    flexShrink: 0,
+                    gap: 14,
+                    marginBottom: 14,
                   }}
                 >
-                  {shop.icon}
+                  <div
+                    style={{
+                      width: 52,
+                      height: 52,
+                      borderRadius: 14,
+                      background: '#e8f5e9',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 26,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {shop.icon}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        fontSize: 15,
+                        fontWeight: 800,
+                        color: '#1F2937',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {shop.name}
+                    </div>
+                    <div style={{ fontSize: 12, color: '#6B7280' }}>
+                      {shop.category}
+                    </div>
+                  </div>
+                  {/* Open / Closed badge */}
+                  <span
+                    style={S.badge(
+                      shop.isOpen ? '#e8f5e9' : '#F3F4F6',
+                      shop.isOpen ? '#16a34a' : '#9CA3AF',
+                    )}
+                  >
+                    {shop.isOpen ? '● Open' : '○ Closed'}
+                  </span>
                 </div>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: '#1F2937' }}>{shop.name}</div>
-                  <div style={{ fontSize: 12, color: '#6B7280' }}>{shop.category}</div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 13, color: '#6B7280' }}>{shop.products} products</span>
-                <span
+
+                <div
                   style={{
-                    background: '#fff3e0',
-                    color: '#e65c00',
-                    padding: '3px 10px',
-                    borderRadius: 7,
-                    fontSize: 12,
-                    fontWeight: 700,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: 14,
                   }}
                 >
-                  ⭐ {shop.rating}
-                </span>
+                  <span style={{ fontSize: 13, color: '#6B7280' }}>
+                    {shop.products} products
+                  </span>
+                  <span style={S.badge('#fff3e0', '#e65c00')}>
+                    ⭐ {shop.rating}
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => navigate(`/student/shop/${shop.id}`)}
+                  disabled={!shop.isOpen}
+                  style={{
+                    width: '100%',
+                    height: 38,
+                    background: shop.isOpen ? '#f5a623' : '#E5E7EB',
+                    border: 'none',
+                    borderRadius: 10,
+                    color: shop.isOpen ? '#fff' : '#9CA3AF',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: shop.isOpen ? 'pointer' : 'not-allowed',
+                    fontFamily: 'Poppins',
+                  }}
+                >
+                  {shop.isOpen ? 'View Shop →' : 'Currently Closed'}
+                </button>
               </div>
-              <button
-                style={{
-                  marginTop: 14,
-                  width: '100%',
-                  height: 38,
-                  background: '#f5a623',
-                  border: 'none',
-                  borderRadius: 10,
-                  color: '#fff',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  fontFamily: 'Poppins',
-                }}
-              >
-                View Shop →
-              </button>
-            </div>
-          ))}
-        </div>
-        {filtered.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '60px', color: '#9CA3AF', fontSize: 15 }}>
-            No shops found 🔍
+            ))}
           </div>
         )}
       </section>
