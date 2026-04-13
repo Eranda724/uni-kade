@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
 const UNIVERSITIES = [
   'University of Moratuwa',
@@ -74,6 +75,7 @@ const errBox = {
 
 export default function Register() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [role, setRole] = useState(null) // null = role picker, 'seller' | 'student'
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -174,7 +176,7 @@ export default function Register() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.message)
-      setStep(role === 'seller' ? 4 : 3) // success screen
+      login(data) // auto-login and navigate based on backend response
     } catch (err) {
       setError(err.message || 'Registration failed')
     } finally {

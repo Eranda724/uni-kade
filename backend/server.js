@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const dotenv = require('dotenv')
 const http = require('http')
+const authRoutes = require('./routes/authRoutes')
 
 dotenv.config()
 
@@ -22,6 +23,18 @@ app.use(express.urlencoded({ extended: true }))
 app.get('/', (req, res) => {
   res.json({ message: '🎓 UNI-KADE API is running!' })
 })
+
+// Auth routes
+app.use('/api/auth', authRoutes)
+
+// New routes
+const productRoutes = require('./routes/productRoutes')
+const orderRoutes = require('./routes/orderRoutes')
+const userRoutes = require('./routes/userRoutes')
+
+app.use('/api/products', productRoutes)
+app.use('/api/orders', orderRoutes)
+app.use('/api/users', userRoutes)
 
 // MongoDB connect + start server
 const PORT = process.env.PORT || 5000

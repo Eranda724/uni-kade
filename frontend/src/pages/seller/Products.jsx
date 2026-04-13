@@ -1,48 +1,84 @@
-import { useState } from 'react'
-
-const MOCK_PRODUCTS = [
-  { id: 1, name: 'Rice & Curry', category: 'Food', price: 190, stock: 'Available', orders: 142, active: true },
-  { id: 2, name: 'Kottu', category: 'Food', price: 250, stock: 'Available', orders: 98, active: true },
-  { id: 3, name: 'Short Eats (Pack)', category: 'Food', price: 80, stock: 'Out of Stock', orders: 203, active: false },
-  { id: 4, name: 'Fried Rice', category: 'Food', price: 220, stock: 'Available', orders: 115, active: true },
-  { id: 5, name: 'Juice (Fresh)', category: 'Drinks', price: 60, stock: 'Available', orders: 89, active: true },
-]
+import { useState, useEffect } from 'react'
+import { useAuth } from '../../context/AuthContext'
 
 const BLANK = { name: '', category: 'Food', price: '', description: '' }
 const CATEGORIES = ['Food', 'Drinks', 'Snacks', 'Stationery', 'Other']
 
 export default function SellerProducts() {
-  const [products, setProducts] = useState(MOCK_PRODUCTS)
+  const { token, user } = useAuth()
+  const [products, setProducts] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [form, setForm] = useState(BLANK)
   const [search, setSearch] = useState('')
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/products`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      if (res.ok) setProducts(data)
+    } catch (err) {
+      console.error('Failed to fetch products', err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   )
 
-  const toggleActive = (id) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, active: !p.active } : p))
-    )
+  const toggleActive = async (id, currentActive) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ active: !currentActive })
+      })
+      if (res.ok) {
+        setProducts((prev) =>
+          prev.map((p) => (p._id === id ? { ...p, active: !currentActive } : p))
+        )
+      }
+    } catch (err) {
+      console.error('Failed to toggle active', err)
+    }
   }
 
-  const addProduct = () => {
+  const addProduct = async () => {
     if (!form.name.trim() || !form.price) return
-    setProducts((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        name: form.name,
-        category: form.category,
-        price: Number(form.price),
-        stock: 'Available',
-        orders: 0,
-        active: true,
-      },
-    ])
-    setForm(BLANK)
-    setShowModal(false)
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: form.name,
+          category: form.category,
+          price: Number(form.price),
+          description: form.description
+        })
+      })
+      const newProduct = await res.json()
+      if (res.ok) {
+        setProducts([newProduct, ...products])
+        setForm(BLANK)
+        setShowModal(false)
+      }
+    } catch (err) {
+      console.error('Failed to add product', err)
+    }
   }
 
   const inp = {
@@ -59,6 +95,8 @@ export default function SellerProducts() {
     color: '#1F2937',
     boxSizing: 'border-box',
   }
+
+  if (loading) return <div style={{ padding: 32 }}>Loading products...</div>
 
   return (
     <div style={{ padding: 32 }}>
@@ -140,7 +178,7 @@ export default function SellerProducts() {
           <tbody>
             {filtered.map((p, i) => (
               <tr
-                key={p.id}
+                key={p._id}
                 style={{ borderTop: '1px solid #F3F4F6', background: i % 2 === 0 ? '#fff' : '#fafafa' }}
               >
                 <td style={{ padding: '14px 20px', fontSize: 14, fontWeight: 700, color: '#1F2937' }}>
@@ -164,10 +202,10 @@ export default function SellerProducts() {
                     {p.stock}
                   </span>
                 </td>
-                <td style={{ padding: '14px 20px', fontSize: 13, color: '#374151' }}>{p.orders}</td>
+                <td style={{ padding: '14px 20px', fontSize: 13, color: '#374151' }}>{p.ordersCount || 0}</td>
                 <td style={{ padding: '14px 20px' }}>
                   <button
-                    onClick={() => toggleActive(p.id)}
+                    onClick={() => toggleActive(p._id, p.active)}
                     style={{
                       padding: '4px 12px',
                       borderRadius: 7,
@@ -201,6 +239,11 @@ export default function SellerProducts() {
             ))}
           </tbody>
         </table>
+        {filtered.length === 0 && (
+          <div style={{ padding: '40px 20px', textAlign: 'center', color: '#9CA3AF', fontSize: 14 }}>
+            No products found
+          </div>
+        )}
       </div>
 
       {/* Add Product Modal */}
