@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [showPass, setShowPass] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -24,12 +25,7 @@ export default function Login() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.message)
-
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.user))
-
-      if (data.user.role === 'admin') navigate('/admin/dashboard')
-      else navigate('/seller/dashboard')
+      login(data) // handles localStorage + role-based redirect
     } catch (err) {
       setError(err.message || 'Login failed')
     } finally {
