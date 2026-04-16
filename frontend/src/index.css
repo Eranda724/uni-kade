@@ -7,22 +7,81 @@
 }
 
 :root {
+  /* Brand Constants */
   --primary: #f5a623;
   --primary-dark: #e09010;
   --secondary: #1a5c3a;
-  --bg: #f8f9fc;
-  --white: #ffffff;
-  --text: #1f2937;
-  --text-muted: #6b7280;
-  --border: #e5e7eb;
   --success: #22c55e;
+  --success-bg: #e8f5e9;
+  --success-text: #16a34a;
   --danger: #ef4444;
+  --danger-bg: #fee2e2;
+  --danger-text: #dc2626;
   --warning: #f59e0b;
+  --warning-bg: #fff3e0;
+  --warning-text: #e65c00;
   --radius: 12px;
+  
+  /* Light Mode Variables */
+  --bg: #F8F9FC;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+  --bg-input: #ffffff;
+  --text: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --nav-bg: #ffffff;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+  --modal-bg: rgba(0,0,0,0.5);
+}
+
+html.dark {
+  /* Dark Mode Variables */
+  --bg: #0f172a; 
+  --bg-card: #1e293b; 
+  --bg-hover: #334155;
+  --bg-input: #0f172a;
+  --text: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-light: #64748b;
+  --border: #334155;
+  --border-light: #1e293b;
+  --nav-bg: #1e293b;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.6);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.7);
+  --modal-bg: rgba(0,0,0,0.8);
+
+  /* Adjust badge colors for dark mode readability */
+  --success-bg: rgba(34, 197, 94, 0.15);
+  --success-text: #4ade80;
+  --danger-bg: rgba(239, 68, 68, 0.15);
+  --danger-text: #f87171;
+  --warning-bg: rgba(245, 158, 11, 0.15);
+  --warning-text: #fbbf24;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
   font-family: 'Poppins', sans-serif;
   background: var(--bg);
   color: var(--text);
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Smoother theme transitions for all elements */
+*, *::before, *::after {
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }

@@ -16,15 +16,15 @@ const UNIVERSITIES = [
 const inp = (disabled = false) => ({
   width: '100%',
   height: 46,
-  border: `1.5px solid ${disabled ? '#F3F4F6' : '#E5E7EB'}`,
+  border: `1.5px solid ${disabled ? 'var(--border-light)' : 'var(--border)'}`,
   borderRadius: 10,
   padding: '0 14px',
   fontSize: 14,
   fontFamily: 'Poppins',
   outline: 'none',
   marginBottom: 16,
-  background: disabled ? '#F3F4F6' : '#F8F9FC',
-  color: disabled ? '#9CA3AF' : '#1F2937',
+  background: disabled ? 'var(--border-light)' : 'var(--bg-input)',
+  color: disabled ? 'var(--text-light)' : 'var(--text)',
   boxSizing: 'border-box',
   cursor: disabled ? 'not-allowed' : 'text',
 })
@@ -32,7 +32,7 @@ const inp = (disabled = false) => ({
 const labelStyle = {
   fontSize: 11,
   fontWeight: 700,
-  color: '#6B7280',
+  color: 'var(--text-muted)',
   textTransform: 'uppercase',
   letterSpacing: 0.5,
   marginBottom: 5,
@@ -44,10 +44,10 @@ function Card({ title, subtitle, children }) {
   return (
     <div
       style={{
-        background: '#fff',
+        background: 'var(--bg-card)',
         borderRadius: 16,
-        border: '1px solid #F3F4F6',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
+        border: '1px solid var(--border-light)',
+        boxShadow: 'var(--shadow-sm)',
         padding: '24px 28px',
         marginBottom: 20,
       }}
@@ -58,14 +58,14 @@ function Card({ title, subtitle, children }) {
             style={{
               fontSize: 16,
               fontWeight: 800,
-              color: '#1F2937',
+              color: 'var(--text)',
               marginBottom: 2,
             }}
           >
             {title}
           </h3>
           {subtitle && (
-            <p style={{ fontSize: 13, color: '#9CA3AF' }}>{subtitle}</p>
+            <p style={{ fontSize: 13, color: 'var(--text-light)' }}>{subtitle}</p>
           )}
         </div>
       )}
@@ -81,12 +81,12 @@ function Toast({ msg, type }) {
   return (
     <div
       style={{
-        background: isErr ? '#fee2e2' : '#f0faf5',
-        border: `1px solid ${isErr ? '#fca5a5' : '#a7f3d0'}`,
+        background: isErr ? 'var(--danger-bg)' : 'var(--success-bg)',
+        border: `1px solid ${isErr ? 'var(--danger-text)' : 'var(--success-text)'}`,
         borderRadius: 10,
         padding: '10px 16px',
         fontSize: 13,
-        color: isErr ? '#dc2626' : '#065f46',
+        color: isErr ? 'var(--danger-text)' : 'var(--success-text)',
         marginBottom: 16,
         fontWeight: 600,
       }}
@@ -205,13 +205,13 @@ export default function StudentProfile() {
           style={{
             fontSize: 24,
             fontWeight: 800,
-            color: '#1F2937',
+            color: 'var(--text)',
             marginBottom: 4,
           }}
         >
           My Profile
         </h1>
-        <p style={{ fontSize: 14, color: '#6B7280' }}>
+        <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
           Manage your account information and security.
         </p>
       </div>
@@ -219,7 +219,7 @@ export default function StudentProfile() {
       {/* ── Avatar Banner ─────────────────────────────────────── */}
       <div
         style={{
-          background: 'linear-gradient(135deg,#1a5c3a,#2d8a57)',
+          background: 'linear-gradient(135deg, var(--secondary), #2d8a57)',
           borderRadius: 18,
           padding: '24px 28px',
           marginBottom: 20,
@@ -306,7 +306,7 @@ export default function StudentProfile() {
           display: 'flex',
           gap: 4,
           marginBottom: 20,
-          background: '#F8F9FC',
+          background: 'var(--bg-input)',
           borderRadius: 12,
           padding: 5,
           width: 'fit-content',
@@ -323,14 +323,14 @@ export default function StudentProfile() {
               padding: '8px 20px',
               borderRadius: 9,
               border: 'none',
-              background: activeTab === t.key ? '#fff' : 'transparent',
-              color: activeTab === t.key ? '#1F2937' : '#6B7280',
+              background: activeTab === t.key ? 'var(--bg-card)' : 'transparent',
+              color: activeTab === t.key ? 'var(--text)' : 'var(--text-muted)',
               fontWeight: activeTab === t.key ? 700 : 500,
               fontSize: 13,
               cursor: 'pointer',
               fontFamily: 'Poppins',
               boxShadow:
-                activeTab === t.key ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                activeTab === t.key ? 'var(--shadow-sm)' : 'none',
             }}
           >
             {t.label}
@@ -421,7 +421,7 @@ export default function StudentProfile() {
             style={{
               height: 46,
               padding: '0 28px',
-              background: saving ? '#ccc' : '#f5a623',
+              background: saving ? 'var(--border)' : 'var(--primary)',
               border: 'none',
               borderRadius: 12,
               color: '#fff',
@@ -498,7 +498,7 @@ export default function StudentProfile() {
               style={{
                 marginBottom: 16,
                 fontSize: 12,
-                color: pwForm.newPassword.length >= 8 ? '#16a34a' : '#e65c00',
+                color: pwForm.newPassword.length >= 8 ? 'var(--success-text)' : 'var(--warning-text)',
               }}
             >
               {pwForm.newPassword.length >= 8
@@ -513,7 +513,7 @@ export default function StudentProfile() {
             style={{
               height: 46,
               padding: '0 28px',
-              background: saving ? '#ccc' : '#f5a623',
+              background: saving ? 'var(--border)' : 'var(--primary)',
               border: 'none',
               borderRadius: 12,
               color: '#fff',

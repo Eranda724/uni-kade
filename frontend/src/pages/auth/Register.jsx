@@ -29,22 +29,22 @@ const STUDENT_STEPS = [
 const inp = {
   width: '100%',
   height: 48,
-  border: '1.5px solid #E5E7EB',
+  border: '1.5px solid var(--border)',
   borderRadius: 12,
   padding: '0 16px',
   fontSize: 14,
   fontFamily: 'Poppins',
   outline: 'none',
   marginBottom: 14,
-  background: '#F8F9FC',
-  color: '#1F2937',
+  background: 'var(--bg-input)',
+  color: 'var(--text)',
   boxSizing: 'border-box',
 }
 
 const labelStyle = {
   fontSize: 11,
   fontWeight: 700,
-  color: '#6B7280',
+  color: 'var(--text-muted)',
   textTransform: 'uppercase',
   letterSpacing: 0.5,
   marginBottom: 5,
@@ -52,8 +52,8 @@ const labelStyle = {
 }
 
 const badgeStyle = {
-  background: '#fff3e0',
-  color: '#e65c00',
+  background: 'var(--warning-bg)',
+  color: 'var(--warning-text)',
   fontSize: 10,
   fontWeight: 700,
   padding: '3px 10px',
@@ -65,8 +65,8 @@ const badgeStyle = {
 }
 
 const errBox = {
-  background: '#fee2e2',
-  color: '#dc2626',
+  background: 'var(--danger-bg)',
+  color: 'var(--danger-text)',
   padding: '10px 14px',
   borderRadius: 10,
   fontSize: 14,
@@ -197,7 +197,7 @@ export default function Register() {
           alignItems: 'center',
           justifyContent: 'center',
           fontFamily: 'Poppins, sans-serif',
-          background: 'linear-gradient(135deg,#fff9f0,#f0faf5)',
+          background: 'var(--bg-hover)',
           padding: 24,
         }}
       >
@@ -214,7 +214,7 @@ export default function Register() {
                 width: 72,
                 height: 72,
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg,#1a5c3a,#2d8a57)',
+                background: 'linear-gradient(135deg, var(--secondary), #2d8a57)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -225,10 +225,10 @@ export default function Register() {
             >
               🍴
             </div>
-            <h1 style={{ fontSize: 28, fontWeight: 800, color: '#1a5c3a', marginBottom: 4 }}>
-              UNI<span style={{ color: '#f5a623' }}>-KADE</span>
+            <h1 style={{ fontSize: 28, fontWeight: 800, color: 'var(--secondary)', marginBottom: 4 }}>
+              UNI<span style={{ color: 'var(--primary)' }}>-KADE</span>
             </h1>
-            <p style={{ fontSize: 14, color: '#6B7280' }}>
+            <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
               Create your account — who are you?
             </p>
           </div>
@@ -241,24 +241,24 @@ export default function Register() {
                 icon: '🛒',
                 title: "I'm a Seller",
                 desc: 'Campus shop, canteen, or service owner. List your products and receive orders.',
-                accent: '#1a5c3a',
-                lightBg: '#e8f5e9',
+                accent: 'var(--secondary)',
+                lightBg: 'var(--success-bg)',
               },
               {
                 key: 'student',
                 icon: '🎓',
                 title: "I'm a Student",
                 desc: 'University student looking to order food, stationery and supplies on campus.',
-                accent: '#f5a623',
-                lightBg: '#fff3e0',
+                accent: 'var(--primary)',
+                lightBg: 'var(--warning-bg)',
               },
             ].map((r) => (
               <button
                 key={r.key}
                 onClick={() => setRole(r.key)}
                 style={{
-                  background: '#fff',
-                  border: '2px solid #E5E7EB',
+                  background: 'var(--bg-card)',
+                  border: '2px solid var(--border)',
                   borderRadius: 18,
                   padding: '32px 24px',
                   textAlign: 'center',
@@ -272,7 +272,7 @@ export default function Register() {
                   e.currentTarget.style.transform = 'translateY(-3px)'
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#E5E7EB'
+                  e.currentTarget.style.borderColor = 'var(--border)'
                   e.currentTarget.style.boxShadow = 'none'
                   e.currentTarget.style.transform = 'translateY(0)'
                 }}
@@ -292,10 +292,10 @@ export default function Register() {
                 >
                   {r.icon}
                 </div>
-                <div style={{ fontSize: 17, fontWeight: 800, color: '#1F2937', marginBottom: 8 }}>
+                <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--text)', marginBottom: 8 }}>
                   {r.title}
                 </div>
-                <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.55 }}>
+                <div style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.55 }}>
                   {r.desc}
                 </div>
                 <div
@@ -318,9 +318,9 @@ export default function Register() {
             ))}
           </div>
 
-          <p style={{ textAlign: 'center', fontSize: 14, color: '#6B7280' }}>
+          <p style={{ textAlign: 'center', fontSize: 14, color: 'var(--text-muted)' }}>
             Already have an account?{' '}
-            <Link to="/login" style={{ color: '#f5a623', fontWeight: 600 }}>
+            <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>
               Sign in
             </Link>
           </p>
@@ -342,24 +342,24 @@ export default function Register() {
           alignItems: 'center',
           justifyContent: 'center',
           fontFamily: 'Poppins, sans-serif',
-          background: 'linear-gradient(135deg,#fff9f0,#f0faf5)',
+          background: 'var(--bg-hover)',
         }}
       >
         <div style={{ textAlign: 'center', maxWidth: 480, padding: 32 }}>
           <div style={{ fontSize: 72, marginBottom: 20 }}>{isSeller ? '🎉' : '✅'}</div>
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: '#1F2937', marginBottom: 12 }}>
+          <h2 style={{ fontSize: 28, fontWeight: 800, color: 'var(--text)', marginBottom: 12 }}>
             {isSeller ? 'Registration Submitted!' : 'Account Created!'}
           </h2>
-          <p style={{ fontSize: 15, color: '#6B7280', lineHeight: 1.7, marginBottom: 28 }}>
+          <p style={{ fontSize: 15, color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: 28 }}>
             {isSeller ? (
               <>
-                Thank you <strong style={{ color: '#1F2937' }}>{form.name}</strong>!<br />
-                Your shop <strong style={{ color: '#f5a623' }}>{form.shopName}</strong> is under review.<br />
-                We'll email you at <strong style={{ color: '#1F2937' }}>{form.email}</strong> once approved.
+                Thank you <strong style={{ color: 'var(--text)' }}>{form.name}</strong>!<br />
+                Your shop <strong style={{ color: 'var(--primary)' }}>{form.shopName}</strong> is under review.<br />
+                We'll email you at <strong style={{ color: 'var(--text)' }}>{form.email}</strong> once approved.
               </>
             ) : (
               <>
-                Welcome, <strong style={{ color: '#1F2937' }}>{form.name}</strong>!<br />
+                Welcome, <strong style={{ color: 'var(--text)' }}>{form.name}</strong>!<br />
                 Your student account is ready.<br />
                 Start exploring campus shops now 🛒
               </>
@@ -368,8 +368,8 @@ export default function Register() {
           {isSeller ? (
             <div
               style={{
-                background: '#f0faf5',
-                border: '1px solid #a7f3d0',
+                background: 'var(--success-bg)',
+                border: '1px solid var(--success-text)',
                 borderRadius: 12,
                 padding: '14px 16px',
                 marginBottom: 28,
@@ -383,7 +383,7 @@ export default function Register() {
           <button
             onClick={() => navigate(isSeller ? '/login' : '/student/home')}
             style={{
-              background: '#f5a623',
+              background: 'var(--primary)',
               color: '#fff',
               border: 'none',
               padding: '14px 40px',
@@ -408,7 +408,7 @@ export default function Register() {
       <div
         style={{
           width: 360,
-          background: 'linear-gradient(155deg,#1a5c3a,#2d8a57 60%,#f5a623)',
+          background: 'linear-gradient(155deg, var(--secondary), #2d8a57 60%, var(--primary))',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -474,7 +474,7 @@ export default function Register() {
                   fontSize: 13,
                   fontWeight: 800,
                   background:
-                    step > s.n ? '#22c55e' : step === s.n ? '#f5a623' : 'rgba(255,255,255,0.2)',
+                    step > s.n ? 'var(--success-text)' : step === s.n ? 'var(--primary)' : 'rgba(255,255,255,0.2)',
                 }}
               >
                 {step > s.n ? '✓' : s.n}
@@ -515,7 +515,7 @@ export default function Register() {
           alignItems: 'center',
           justifyContent: 'center',
           padding: '48px 40px',
-          background: '#fff',
+          background: 'var(--bg-card)',
           overflowY: 'auto',
         }}
       >
@@ -529,7 +529,7 @@ export default function Register() {
                   flex: 1,
                   height: 4,
                   borderRadius: 2,
-                  background: s.n <= step ? '#f5a623' : '#E5E7EB',
+                  background: s.n <= step ? 'var(--primary)' : 'var(--border)',
                   transition: 'background 0.3s',
                 }}
               />
@@ -542,12 +542,12 @@ export default function Register() {
               <span style={badgeStyle}>
                 Step 1 of {totalSteps}
               </span>
-              <h2 style={{ fontSize: 26, fontWeight: 800, color: '#1F2937', marginBottom: 4 }}>
+              <h2 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
                 Hello! Create Account
               </h2>
-              <p style={{ fontSize: 14, color: '#6B7280', marginBottom: 28 }}>
+              <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 28 }}>
                 Already have an account?{' '}
-                <Link to="/login" style={{ color: '#f5a623', fontWeight: 600 }}>
+                <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>
                   Sign in
                 </Link>
               </p>
@@ -594,7 +594,7 @@ export default function Register() {
                 style={{
                   width: '100%',
                   height: 48,
-                  background: '#f5a623',
+                  background: 'var(--primary)',
                   border: 'none',
                   borderRadius: 12,
                   color: '#fff',
@@ -613,10 +613,10 @@ export default function Register() {
           {step === 2 && role === 'seller' && (
             <>
               <span style={badgeStyle}>Step 2 of {totalSteps}</span>
-              <h2 style={{ fontSize: 26, fontWeight: 800, color: '#1F2937', marginBottom: 4 }}>
+              <h2 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
                 Your Shop Info
               </h2>
-              <p style={{ fontSize: 14, color: '#6B7280', marginBottom: 28 }}>
+              <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 28 }}>
                 Tell us about your campus shop or canteen
               </p>
 
@@ -702,7 +702,7 @@ export default function Register() {
                   style={{
                     flex: 2,
                     height: 48,
-                    background: '#f5a623',
+                    background: 'var(--primary)',
                     border: 'none',
                     borderRadius: 12,
                     color: '#fff',
@@ -722,10 +722,10 @@ export default function Register() {
           {step === 2 && role === 'student' && (
             <>
               <span style={badgeStyle}>Step 2 of {totalSteps}</span>
-              <h2 style={{ fontSize: 26, fontWeight: 800, color: '#1F2937', marginBottom: 4 }}>
+              <h2 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
                 University Info
               </h2>
-              <p style={{ fontSize: 14, color: '#6B7280', marginBottom: 28 }}>
+              <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 28 }}>
                 Help us connect you with shops at your campus
               </p>
 
@@ -792,7 +792,7 @@ export default function Register() {
                   style={{
                     flex: 2,
                     height: 48,
-                    background: loading ? '#ccc' : '#f5a623',
+                    background: loading ? 'var(--border)' : 'var(--primary)',
                     border: 'none',
                     borderRadius: 12,
                     color: '#fff',
@@ -812,10 +812,10 @@ export default function Register() {
           {step === 3 && role === 'seller' && (
             <>
               <span style={badgeStyle}>Step 3 of {totalSteps}</span>
-              <h2 style={{ fontSize: 26, fontWeight: 800, color: '#1F2937', marginBottom: 4 }}>
+              <h2 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
                 Review & Submit
               </h2>
-              <p style={{ fontSize: 14, color: '#6B7280', marginBottom: 24 }}>
+              <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 24 }}>
                 Check your details before submitting
               </p>
 
@@ -836,14 +836,14 @@ export default function Register() {
                     display: 'flex',
                     justifyContent: 'space-between',
                     padding: '11px 0',
-                    borderBottom: '1px solid #F3F4F6',
+                    borderBottom: '1px solid var(--border-light)',
                     fontSize: 14,
                   }}
                 >
-                  <span style={{ color: '#6B7280', fontWeight: 500 }}>{k}</span>
+                  <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>{k}</span>
                   <span
                     style={{
-                      color: '#1F2937',
+                      color: 'var(--text)',
                       fontWeight: 600,
                       textAlign: 'right',
                       maxWidth: '60%',
@@ -856,15 +856,15 @@ export default function Register() {
 
               <div
                 style={{
-                  background: '#f0faf5',
-                  border: '1px solid #a7f3d0',
+                  background: 'var(--success-bg)',
+                  border: '1px solid var(--success-text)',
                   borderRadius: 12,
                   padding: '14px 16px',
                   marginTop: 20,
                   marginBottom: 24,
                 }}
               >
-                <p style={{ fontSize: 13, color: '#065f46', lineHeight: 1.6, margin: 0 }}>
+                <p style={{ fontSize: 13, color: 'var(--success-text)', lineHeight: 1.6, margin: 0 }}>
                   ✅ After submitting, your account will be reviewed by an admin. You'll receive an email once approved — usually within 24 hours.
                 </p>
               </div>
@@ -893,7 +893,7 @@ export default function Register() {
                   style={{
                     flex: 2,
                     height: 48,
-                    background: loading ? '#ccc' : '#f5a623',
+                    background: loading ? 'var(--border)' : 'var(--primary)',
                     border: 'none',
                     borderRadius: 12,
                     color: '#fff',

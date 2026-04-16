@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import ThemeToggle from '../common/ThemeToggle'
 
 const NAV = [
   { to: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
@@ -11,7 +12,7 @@ export default function AdminLayout() {
   const { user, logout } = useAuth()
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Poppins, sans-serif' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Poppins, sans-serif', background: 'var(--bg)', transition: 'all 0.3s ease' }}>
       {/* ── SIDEBAR ─────────────────────────────────── */}
       <aside
         style={{
@@ -23,6 +24,7 @@ export default function AdminLayout() {
           position: 'sticky',
           top: 0,
           height: '100vh',
+          zIndex: 100
         }}
       >
         {/* Logo */}
@@ -47,7 +49,7 @@ export default function AdminLayout() {
                 width: 36,
                 height: 36,
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg,#1a5c3a,#2d8a57)',
+                background: 'linear-gradient(135deg, var(--secondary), #2d8a57)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -57,7 +59,7 @@ export default function AdminLayout() {
             >
               🍴
             </div>
-            UNI<span style={{ color: '#f5a623' }}>-KADE</span>
+            UNI<span style={{ color: 'var(--primary)' }}>-KADE</span>
           </div>
           <div
             style={{
@@ -71,7 +73,7 @@ export default function AdminLayout() {
               padding: '3px 8px',
               fontSize: 10,
               fontWeight: 700,
-              color: '#f5a623',
+              color: 'var(--primary)',
               textTransform: 'uppercase',
               letterSpacing: 1,
             }}
@@ -95,10 +97,10 @@ export default function AdminLayout() {
                 textDecoration: 'none',
                 fontSize: 14,
                 fontWeight: isActive ? 700 : 500,
-                color: isActive ? '#f5a623' : 'rgba(255,255,255,0.65)',
+                color: isActive ? 'var(--primary)' : 'rgba(255,255,255,0.65)',
                 background: isActive ? 'rgba(245,166,35,0.1)' : 'transparent',
                 transition: 'all 0.15s',
-                borderLeft: isActive ? '3px solid #f5a623' : '3px solid transparent',
+                borderLeft: isActive ? `3px solid var(--primary)` : '3px solid transparent',
               })}
             >
               <span style={{ fontSize: 18 }}>{item.icon}</span>
@@ -114,13 +116,13 @@ export default function AdminLayout() {
             borderTop: '1px solid rgba(255,255,255,0.07)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
             <div
               style={{
-                width: 36,
-                height: 36,
+                width: 38,
+                height: 38,
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg,#f5a623,#e65c00)',
+                background: 'linear-gradient(135deg, var(--primary), var(--primary-dark))',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -128,12 +130,13 @@ export default function AdminLayout() {
                 fontWeight: 800,
                 color: '#fff',
                 flexShrink: 0,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
               }}
             >
               {user?.name?.[0]?.toUpperCase() || 'A'}
             </div>
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {user?.name || 'Admin'}
               </div>
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
@@ -141,29 +144,37 @@ export default function AdminLayout() {
               </div>
             </div>
           </div>
-          <button
-            onClick={logout}
-            style={{
-              width: '100%',
-              height: 36,
-              background: 'rgba(255,255,255,0.07)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 8,
-              color: 'rgba(255,255,255,0.6)',
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: 'pointer',
-              fontFamily: 'Poppins',
-            }}
-          >
-            Sign Out
-          </button>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <ThemeToggle />
+            <button
+              onClick={logout}
+              style={{
+                flex: 1,
+                height: 40,
+                background: 'rgba(255,255,255,0.07)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 10,
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                fontFamily: 'Poppins',
+              }}
+              onMouseEnter={(e) => e.target.style.background = 'rgba(255,255,255,0.12)'}
+              onMouseLeave={(e) => e.target.style.background = 'rgba(255,255,255,0.07)'}
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       </aside>
 
       {/* ── MAIN CONTENT ─────────────────────────────── */}
-      <main style={{ flex: 1, background: '#F8F9FC', overflowY: 'auto' }}>
-        <Outlet />
+      <main style={{ flex: 1, background: 'var(--bg)', overflowY: 'auto', padding: '32px 48px', transition: 'background-color 0.3s ease' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <Outlet />
+        </div>
       </main>
     </div>
   )

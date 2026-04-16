@@ -10,9 +10,9 @@ const INIT_SELLERS = [
 ]
 
 const STATUS_STYLE = {
-  Active: { bg: '#e8f5e9', color: '#16a34a' },
-  Pending: { bg: '#fff3e0', color: '#e65c00' },
-  Suspended: { bg: '#fee2e2', color: '#dc2626' },
+  Active: { bg: 'var(--success-bg)', color: 'var(--success-text)' },
+  Pending: { bg: 'var(--warning-bg)', color: 'var(--warning-text)' },
+  Suspended: { bg: 'var(--danger-bg)', color: 'var(--danger-text)' },
 }
 
 const FILTER_TABS = ['All', 'Active', 'Pending', 'Suspended']
@@ -37,8 +37,8 @@ export default function AdminSellers() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1F2937', marginBottom: 4 }}>Sellers</h1>
-          <p style={{ fontSize: 14, color: '#6B7280' }}>
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>Sellers</h1>
+          <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
             {sellers.filter((s) => s.status === 'Active').length} active ·{' '}
             {sellers.filter((s) => s.status === 'Pending').length} pending ·{' '}
             {sellers.filter((s) => s.status === 'Suspended').length} suspended
@@ -56,9 +56,9 @@ export default function AdminSellers() {
               style={{
                 padding: '7px 16px',
                 borderRadius: 9,
-                border: filter === t ? 'none' : '1.5px solid #E5E7EB',
-                background: filter === t ? '#f5a623' : '#fff',
-                color: filter === t ? '#fff' : '#6B7280',
+                border: filter === t ? 'none' : '1.5px solid var(--border)',
+                background: filter === t ? 'var(--primary)' : 'var(--bg-card)',
+                color: filter === t ? '#fff' : 'var(--text-muted)',
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -69,8 +69,8 @@ export default function AdminSellers() {
               <span
                 style={{
                   marginLeft: 6,
-                  background: filter === t ? 'rgba(255,255,255,0.3)' : '#F3F4F6',
-                  color: filter === t ? '#fff' : '#6B7280',
+                  background: filter === t ? 'rgba(255,255,255,0.3)' : 'var(--bg-hover)',
+                  color: filter === t ? '#fff' : 'var(--text-muted)',
                   padding: '1px 7px',
                   borderRadius: 5,
                   fontSize: 11,
@@ -85,14 +85,14 @@ export default function AdminSellers() {
         <input
           style={{
             height: 40,
-            border: '1.5px solid #E5E7EB',
+            border: '1.5px solid var(--border)',
             borderRadius: 10,
             padding: '0 14px',
             fontSize: 13,
             fontFamily: 'Poppins',
             outline: 'none',
-            background: '#fff',
-            color: '#1F2937',
+            background: 'var(--bg-card)',
+            color: 'var(--text)',
             width: 230,
           }}
           placeholder="🔍  Search sellers..."
@@ -104,16 +104,16 @@ export default function AdminSellers() {
       {/* Table */}
       <div
         style={{
-          background: '#fff',
+          background: 'var(--bg-card)',
           borderRadius: 16,
-          border: '1px solid #F3F4F6',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+          border: '1px solid var(--border-light)',
+          boxShadow: 'var(--shadow-sm)',
           overflow: 'hidden',
         }}
       >
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ background: '#F8F9FC' }}>
+            <tr style={{ background: 'var(--bg-input)' }}>
               {['Seller', 'Shop', 'University', 'Category', 'Orders', 'Joined', 'Status', 'Actions'].map((h) => (
                 <th
                   key={h}
@@ -122,7 +122,7 @@ export default function AdminSellers() {
                     padding: '12px 20px',
                     fontSize: 11,
                     fontWeight: 700,
-                    color: '#6B7280',
+                    color: 'var(--text-muted)',
                     textTransform: 'uppercase',
                     letterSpacing: 0.5,
                   }}
@@ -136,7 +136,7 @@ export default function AdminSellers() {
             {displayed.map((s, i) => (
               <tr
                 key={s.id}
-                style={{ borderTop: '1px solid #F3F4F6', background: i % 2 === 0 ? '#fff' : '#fafafa' }}
+                style={{ borderTop: '1px solid var(--border-light)', background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--bg-hover)' }}
               >
                 {/* Seller */}
                 <td style={{ padding: '14px 20px' }}>
@@ -146,7 +146,7 @@ export default function AdminSellers() {
                         width: 34,
                         height: 34,
                         borderRadius: '50%',
-                        background: 'linear-gradient(135deg,#1a5c3a,#2d8a57)',
+                        background: 'linear-gradient(135deg, var(--secondary), #2d8a57)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -158,18 +158,18 @@ export default function AdminSellers() {
                     >
                       {s.name[0]}
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#1F2937' }}>{s.name}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{s.name}</span>
                   </div>
                 </td>
-                <td style={{ padding: '14px 20px', fontSize: 13, fontWeight: 700, color: '#1F2937' }}>
+                <td style={{ padding: '14px 20px', fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>
                   {s.shop}
                 </td>
-                <td style={{ padding: '14px 20px', fontSize: 12, color: '#6B7280' }}>{s.university}</td>
-                <td style={{ padding: '14px 20px', fontSize: 12, color: '#374151' }}>{s.category}</td>
-                <td style={{ padding: '14px 20px', fontSize: 13, fontWeight: 600, color: '#1a5c3a' }}>
+                <td style={{ padding: '14px 20px', fontSize: 12, color: 'var(--text-muted)' }}>{s.university}</td>
+                <td style={{ padding: '14px 20px', fontSize: 12, color: 'var(--text-secondary)' }}>{s.category}</td>
+                <td style={{ padding: '14px 20px', fontSize: 13, fontWeight: 600, color: 'var(--secondary)' }}>
                   {s.orders}
                 </td>
-                <td style={{ padding: '14px 20px', fontSize: 12, color: '#6B7280' }}>{s.joined}</td>
+                <td style={{ padding: '14px 20px', fontSize: 12, color: 'var(--text-muted)' }}>{s.joined}</td>
                 {/* Status */}
                 <td style={{ padding: '14px 20px' }}>
                   <span
@@ -194,8 +194,8 @@ export default function AdminSellers() {
                           padding: '5px 11px',
                           borderRadius: 7,
                           border: 'none',
-                          background: '#e8f5e9',
-                          color: '#16a34a',
+                          background: 'var(--success-bg)',
+                          color: 'var(--success-text)',
                           fontSize: 11,
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -213,8 +213,8 @@ export default function AdminSellers() {
                           padding: '5px 11px',
                           borderRadius: 7,
                           border: 'none',
-                          background: '#fee2e2',
-                          color: '#dc2626',
+                          background: 'var(--danger-bg)',
+                          color: 'var(--danger-text)',
                           fontSize: 11,
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -231,8 +231,8 @@ export default function AdminSellers() {
                           padding: '5px 11px',
                           borderRadius: 7,
                           border: 'none',
-                          background: '#e8f5e9',
-                          color: '#16a34a',
+                          background: 'var(--success-bg)',
+                          color: 'var(--success-text)',
                           fontSize: 11,
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -249,8 +249,8 @@ export default function AdminSellers() {
                           padding: '5px 11px',
                           borderRadius: 7,
                           border: 'none',
-                          background: '#F3F4F6',
-                          color: '#6B7280',
+                          background: 'var(--bg-hover)',
+                          color: 'var(--text-muted)',
                           fontSize: 11,
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -267,7 +267,7 @@ export default function AdminSellers() {
           </tbody>
         </table>
         {displayed.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '60px', color: '#9CA3AF', fontSize: 14 }}>
+          <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-light)', fontSize: 14 }}>
             No sellers found
           </div>
         )}

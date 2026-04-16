@@ -29,15 +29,15 @@ export default function ForgotPassword() {
   const inp = {
     width: '100%',
     height: 48,
-    border: '1.5px solid #E5E7EB',
+    border: '1.5px solid var(--border)',
     borderRadius: 12,
     padding: '0 16px',
     fontSize: 14,
     fontFamily: 'Poppins',
     outline: 'none',
     marginBottom: 14,
-    background: '#F8F9FC',
-    color: '#1F2937',
+    background: 'var(--bg-input)',
+    color: 'var(--text)',
     boxSizing: 'border-box',
   }
 
@@ -47,7 +47,7 @@ export default function ForgotPassword() {
       <div
         style={{
           width: 380,
-          background: 'linear-gradient(155deg,#1a5c3a,#2d8a57 60%,#f5a623)',
+          background: 'linear-gradient(155deg, var(--secondary), #2d8a57 60%, var(--primary))',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -103,7 +103,7 @@ export default function ForgotPassword() {
           alignItems: 'center',
           justifyContent: 'center',
           padding: '48px 40px',
-          background: '#fff',
+          background: 'var(--bg-card)',
         }}
       >
         <div style={{ width: '100%', maxWidth: 420 }}>
@@ -111,24 +111,24 @@ export default function ForgotPassword() {
             /* ── SUCCESS STATE ── */
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 72, marginBottom: 20 }}>📬</div>
-              <h2 style={{ fontSize: 26, fontWeight: 800, color: '#1F2937', marginBottom: 12 }}>
+              <h2 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', marginBottom: 12 }}>
                 Check Your Email
               </h2>
-              <p style={{ fontSize: 15, color: '#6B7280', lineHeight: 1.7, marginBottom: 32 }}>
+              <p style={{ fontSize: 15, color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: 32 }}>
                 We've sent a password reset link to<br />
-                <strong style={{ color: '#1F2937' }}>{email}</strong>.<br />
+                <strong style={{ color: 'var(--text)' }}>{email}</strong>.<br />
                 It expires in 30 minutes.
               </p>
               <div
                 style={{
-                  background: '#f0faf5',
-                  border: '1px solid #a7f3d0',
+                  background: 'var(--success-bg)',
+                  border: '1px solid var(--success-text)',
                   borderRadius: 12,
                   padding: '14px 16px',
                   marginBottom: 28,
                 }}
               >
-                <p style={{ fontSize: 13, color: '#065f46', lineHeight: 1.6, margin: 0 }}>
+                <p style={{ fontSize: 13, color: 'var(--success-text)', lineHeight: 1.6, margin: 0 }}>
                   Didn't receive the email? Check your spam folder or try again in a few minutes.
                 </p>
               </div>
@@ -136,7 +136,7 @@ export default function ForgotPassword() {
                 to="/login"
                 style={{
                   display: 'inline-block',
-                  background: '#f5a623',
+                  background: 'var(--primary)',
                   color: '#fff',
                   padding: '13px 32px',
                   borderRadius: 12,
@@ -153,8 +153,8 @@ export default function ForgotPassword() {
             <>
               <span
                 style={{
-                  background: '#fff3e0',
-                  color: '#e65c00',
+                  background: 'var(--warning-bg)',
+                  color: 'var(--warning-text)',
                   fontSize: 10,
                   fontWeight: 700,
                   padding: '3px 10px',
@@ -169,19 +169,19 @@ export default function ForgotPassword() {
               </span>
 
               <h2
-                style={{ fontSize: 26, fontWeight: 800, color: '#1F2937', marginBottom: 4 }}
+                style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}
               >
                 Forgot Password?
               </h2>
-              <p style={{ fontSize: 14, color: '#6B7280', marginBottom: 28 }}>
+              <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 28 }}>
                 Enter the email you registered with and we'll send you a reset link.
               </p>
 
               {error && (
                 <div
                   style={{
-                    background: '#fee2e2',
-                    color: '#dc2626',
+                    background: 'var(--danger-bg)',
+                    color: 'var(--danger-text)',
                     padding: '10px 14px',
                     borderRadius: 10,
                     fontSize: 14,
@@ -196,7 +196,7 @@ export default function ForgotPassword() {
                 style={{
                   fontSize: 11,
                   fontWeight: 700,
-                  color: '#6B7280',
+                  color: 'var(--text-muted)',
                   textTransform: 'uppercase',
                   letterSpacing: 0.5,
                   marginBottom: 5,
@@ -220,7 +220,7 @@ export default function ForgotPassword() {
                 style={{
                   width: '100%',
                   height: 48,
-                  background: loading ? '#ccc' : '#f5a623',
+                  background: loading ? 'var(--border)' : 'var(--primary)',
                   border: 'none',
                   borderRadius: 12,
                   color: '#fff',
@@ -234,9 +234,9 @@ export default function ForgotPassword() {
                 {loading ? 'Sending...' : 'Send Reset Link'}
               </button>
 
-              <p style={{ textAlign: 'center', fontSize: 14, color: '#6B7280' }}>
+              <p style={{ textAlign: 'center', fontSize: 14, color: 'var(--text-muted)' }}>
                 Remember your password?{' '}
-                <Link to="/login" style={{ color: '#f5a623', fontWeight: 600 }}>
+                <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>
                   Sign in
                 </Link>
               </p>

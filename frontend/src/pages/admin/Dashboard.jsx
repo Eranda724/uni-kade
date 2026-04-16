@@ -1,8 +1,8 @@
 const STATS = [
-  { label: 'Total Sellers', value: '48', sub: '3 pending approval', icon: '🏪', accent: '#1a5c3a', bg: '#e8f5e9' },
-  { label: 'Total Students', value: '1,240', sub: '+18 this week', icon: '🎓', accent: '#3b82f6', bg: '#eff6ff' },
-  { label: 'Orders Today', value: '312', sub: 'Across all shops', icon: '📦', accent: '#f5a623', bg: '#fff3e0' },
-  { label: 'Platform Revenue', value: 'Rs. 82,400', sub: 'This month', icon: '💰', accent: '#8b5cf6', bg: '#f5f3ff' },
+  { label: 'Total Sellers', value: '48', sub: '3 pending approval', icon: '🏪', accent: 'var(--success-text)', bg: 'var(--success-bg)' },
+  { label: 'Total Students', value: '1,240', sub: '+18 this week', icon: '🎓', accent: 'var(--info-text)', bg: 'var(--info-bg)' },
+  { label: 'Orders Today', value: '312', sub: 'Across all shops', icon: '📦', accent: 'var(--primary)', bg: 'var(--warning-bg)' },
+  { label: 'Platform Revenue', value: 'Rs. 82,400', sub: 'This month', icon: '💰', accent: 'var(--secondary)', bg: 'var(--bg-hover)' },
 ]
 
 const PENDING_SELLERS = [
@@ -19,10 +19,10 @@ const RECENT_ORDERS = [
 ]
 
 const STATUS_STYLE = {
-  Pending: { bg: '#fff3e0', color: '#e65c00' },
-  Preparing: { bg: '#eff6ff', color: '#2563eb' },
-  Ready: { bg: '#e8f5e9', color: '#16a34a' },
-  Delivered: { bg: '#F3F4F6', color: '#6B7280' },
+  Pending: { bg: 'var(--warning-bg)', color: 'var(--warning-text)' },
+  Preparing: { bg: 'var(--info-bg)', color: 'var(--info-text)' },
+  Ready: { bg: 'var(--success-bg)', color: 'var(--success-text)' },
+  Delivered: { bg: 'var(--bg-hover)', color: 'var(--text-muted)' },
 }
 
 export default function AdminDashboard() {
@@ -30,10 +30,10 @@ export default function AdminDashboard() {
     <div style={{ padding: 32, fontFamily: 'Poppins, sans-serif' }}>
       {/* Header */}
       <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 800, color: '#1F2937', marginBottom: 4 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
           Admin Dashboard ⚡
         </h1>
-        <p style={{ fontSize: 14, color: '#6B7280' }}>
+        <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
           Platform overview and pending actions.
         </p>
       </div>
@@ -44,11 +44,11 @@ export default function AdminDashboard() {
           <div
             key={s.label}
             style={{
-              background: '#fff',
+              background: 'var(--bg-card)',
               borderRadius: 16,
               padding: '22px 20px',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
-              border: '1px solid #F3F4F6',
+              boxShadow: 'var(--shadow-sm)',
+              border: '1px solid var(--border-light)',
             }}
           >
             <div
@@ -66,10 +66,10 @@ export default function AdminDashboard() {
             >
               {s.icon}
             </div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: '#1F2937', marginBottom: 3 }}>
+            <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', marginBottom: 3 }}>
               {s.value}
             </div>
-            <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontSize: 11, fontWeight: 600, color: s.accent }}>{s.sub}</div>
           </div>
         ))}
@@ -79,29 +79,29 @@ export default function AdminDashboard() {
         {/* Pending Approvals */}
         <div
           style={{
-            background: '#fff',
+            background: 'var(--bg-card)',
             borderRadius: 16,
-            border: '1px solid #F3F4F6',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+            border: '1px solid var(--border-light)',
+            boxShadow: 'var(--shadow-sm)',
             overflow: 'hidden',
           }}
         >
           <div
             style={{
               padding: '18px 22px',
-              borderBottom: '1px solid #F3F4F6',
+              borderBottom: '1px solid var(--border-light)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
             }}
           >
-            <h2 style={{ fontSize: 15, fontWeight: 700, color: '#1F2937' }}>
+            <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>
               🕐 Pending Approvals
             </h2>
             <span
               style={{
-                background: '#fff3e0',
-                color: '#e65c00',
+                background: 'var(--warning-bg)',
+                color: 'var(--warning-text)',
                 padding: '3px 10px',
                 borderRadius: 7,
                 fontSize: 12,
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
               key={s.id}
               style={{
                 padding: '16px 22px',
-                borderBottom: i < PENDING_SELLERS.length - 1 ? '1px solid #F3F4F6' : 'none',
+                borderBottom: i < PENDING_SELLERS.length - 1 ? '1px solid var(--border-light)' : 'none',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 14,
@@ -127,7 +127,7 @@ export default function AdminDashboard() {
                   width: 40,
                   height: 40,
                   borderRadius: '50%',
-                  background: 'linear-gradient(135deg,#1a5c3a,#2d8a57)',
+                  background: 'linear-gradient(135deg, var(--secondary), #2d8a57)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -140,11 +140,11 @@ export default function AdminDashboard() {
                 {s.name[0]}
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2937' }}>{s.shop}</div>
-                <div style={{ fontSize: 12, color: '#6B7280' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>{s.shop}</div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                   {s.name} · {s.university}
                 </div>
-                <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>{s.applied}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 1 }}>{s.applied}</div>
               </div>
               <div style={{ display: 'flex', gap: 6 }}>
                 <button
@@ -152,8 +152,8 @@ export default function AdminDashboard() {
                     padding: '5px 12px',
                     borderRadius: 8,
                     border: 'none',
-                    background: '#e8f5e9',
-                    color: '#16a34a',
+                    background: 'var(--success-bg)',
+                    color: 'var(--success-text)',
                     fontSize: 12,
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -167,8 +167,8 @@ export default function AdminDashboard() {
                     padding: '5px 12px',
                     borderRadius: 8,
                     border: 'none',
-                    background: '#fee2e2',
-                    color: '#dc2626',
+                    background: 'var(--danger-bg)',
+                    color: 'var(--danger-text)',
                     fontSize: 12,
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -185,24 +185,24 @@ export default function AdminDashboard() {
         {/* Recent Orders */}
         <div
           style={{
-            background: '#fff',
+            background: 'var(--bg-card)',
             borderRadius: 16,
-            border: '1px solid #F3F4F6',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+            border: '1px solid var(--border-light)',
+            boxShadow: 'var(--shadow-sm)',
             overflow: 'hidden',
           }}
         >
           <div
             style={{
               padding: '18px 22px',
-              borderBottom: '1px solid #F3F4F6',
+              borderBottom: '1px solid var(--border-light)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
             }}
           >
-            <h2 style={{ fontSize: 15, fontWeight: 700, color: '#1F2937' }}>📦 Recent Orders</h2>
-            <span style={{ fontSize: 13, color: '#f5a623', fontWeight: 600, cursor: 'pointer' }}>
+            <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>📦 Recent Orders</h2>
+            <span style={{ fontSize: 13, color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }}>
               View All →
             </span>
           </div>
@@ -211,7 +211,7 @@ export default function AdminDashboard() {
               key={order.id}
               style={{
                 padding: '14px 22px',
-                borderBottom: i < RECENT_ORDERS.length - 1 ? '1px solid #F3F4F6' : 'none',
+                borderBottom: i < RECENT_ORDERS.length - 1 ? '1px solid var(--border-light)' : 'none',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 14,
@@ -219,7 +219,7 @@ export default function AdminDashboard() {
             >
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1F2937' }}>{order.id}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>{order.id}</span>
                   <span
                     style={{
                       padding: '2px 8px',
@@ -232,13 +232,13 @@ export default function AdminDashboard() {
                     {order.status}
                   </span>
                 </div>
-                <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
                   {order.student} · {order.shop}
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#1a5c3a' }}>{order.total}</div>
-                <div style={{ fontSize: 11, color: '#9CA3AF' }}>{order.time}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--secondary)' }}>{order.total}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-light)' }}>{order.time}</div>
               </div>
             </div>
           ))}

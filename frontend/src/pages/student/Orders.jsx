@@ -63,34 +63,34 @@ const MOCK_ORDERS = [
 // ─── Status config ─────────────────────────────────────────────
 const STATUS = {
   Pending: {
-    bg: '#fff3e0',
-    color: '#e65c00',
-    dot: '#f5a623',
+    bg: 'var(--warning-bg)',
+    color: 'var(--warning-text)',
+    dot: 'var(--warning-text)',
     msg: 'Waiting for seller to confirm your order.',
   },
   Confirmed: {
-    bg: '#eff6ff',
-    color: '#2563eb',
-    dot: '#3b82f6',
+    bg: 'var(--success-bg)',
+    color: 'var(--success-text)',
+    dot: 'var(--success-text)',
     msg: 'Seller confirmed! Your order is being prepared soon.',
   },
   Preparing: {
-    bg: '#eff6ff',
-    color: '#2563eb',
-    dot: '#3b82f6',
+    bg: 'var(--success-bg)',
+    color: 'var(--success-text)',
+    dot: 'var(--success-text)',
     msg: 'Your order is being prepared. Please wait for the pickup call.',
   },
   Ready: {
-    bg: '#e8f5e9',
-    color: '#16a34a',
-    dot: '#22c55e',
+    bg: 'var(--success-bg)',
+    color: 'var(--success-text)',
+    dot: 'var(--success-text)',
     msg: '✅ Your order is ready! Go pick it up now.',
   },
-  Completed: { bg: '#F3F4F6', color: '#6B7280', dot: '#9CA3AF', msg: null },
+  Completed: { bg: 'var(--border-light)', color: 'var(--text-muted)', dot: 'var(--text-light)', msg: null },
   Cancelled: {
-    bg: '#fee2e2',
-    color: '#dc2626',
-    dot: '#ef4444',
+    bg: 'var(--danger-bg)',
+    color: 'var(--danger-text)',
+    dot: 'var(--danger-text)',
     msg: 'This order was cancelled.',
   },
 }
@@ -124,13 +124,13 @@ export default function StudentOrders() {
           style={{
             fontSize: 24,
             fontWeight: 800,
-            color: '#1F2937',
+            color: 'var(--text)',
             marginBottom: 4,
           }}
         >
           My Orders
         </h1>
-        <p style={{ fontSize: 14, color: '#6B7280' }}>
+        <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
           Track your current and past orders.
         </p>
       </div>
@@ -141,7 +141,7 @@ export default function StudentOrders() {
           display: 'flex',
           gap: 6,
           marginBottom: 24,
-          background: '#F8F9FC',
+          background: 'var(--bg-input)',
           borderRadius: 12,
           padding: 6,
           width: 'fit-content',
@@ -162,13 +162,13 @@ export default function StudentOrders() {
                 padding: '7px 18px',
                 borderRadius: 8,
                 border: 'none',
-                background: tab === t ? '#fff' : 'transparent',
-                color: tab === t ? '#1F2937' : '#6B7280',
+                background: tab === t ? 'var(--bg-card)' : 'transparent',
+                color: tab === t ? 'var(--text)' : 'var(--text-muted)',
                 fontWeight: tab === t ? 700 : 500,
                 fontSize: 13,
                 cursor: 'pointer',
                 fontFamily: 'Poppins',
-                boxShadow: tab === t ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                boxShadow: tab === t ? 'var(--shadow-sm)' : 'none',
               }}
             >
               {t}
@@ -176,8 +176,8 @@ export default function StudentOrders() {
                 <span
                   style={{
                     marginLeft: 6,
-                    background: tab === t ? '#f5a623' : '#E5E7EB',
-                    color: tab === t ? '#fff' : '#6B7280',
+                    background: tab === t ? 'var(--primary)' : 'var(--border)',
+                    color: tab === t ? '#fff' : 'var(--text-muted)',
                     borderRadius: 10,
                     padding: '1px 7px',
                     fontSize: 11,
@@ -198,8 +198,9 @@ export default function StudentOrders() {
           style={{
             textAlign: 'center',
             padding: '60px 20px',
-            background: '#F8F9FC',
+            background: 'var(--bg-card)',
             borderRadius: 20,
+            border: '1px solid var(--border)',
           }}
         >
           <div style={{ fontSize: 48, marginBottom: 12 }}>📦</div>
@@ -207,13 +208,13 @@ export default function StudentOrders() {
             style={{
               fontSize: 16,
               fontWeight: 700,
-              color: '#1F2937',
+              color: 'var(--text)',
               marginBottom: 6,
             }}
           >
             No orders here
           </p>
-          <p style={{ fontSize: 14, color: '#9CA3AF' }}>
+          <p style={{ fontSize: 14, color: 'var(--text-light)' }}>
             {tab === 'Active'
               ? 'You have no active orders right now.'
               : `No ${tab.toLowerCase()} orders found.`}
@@ -230,10 +231,10 @@ export default function StudentOrders() {
             <div
               key={order.id}
               style={{
-                background: '#fff',
+                background: 'var(--bg-card)',
                 borderRadius: 16,
-                border: '1px solid #F3F4F6',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
+                border: '1px solid var(--border)',
+                boxShadow: 'var(--shadow-sm)',
                 overflow: 'hidden',
               }}
             >
@@ -258,7 +259,7 @@ export default function StudentOrders() {
                         width: 44,
                         height: 44,
                         borderRadius: 12,
-                        background: '#e8f5e9',
+                        background: 'var(--success-bg)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -282,7 +283,7 @@ export default function StudentOrders() {
                           style={{
                             fontSize: 14,
                             fontWeight: 800,
-                            color: '#1F2937',
+                            color: 'var(--text)',
                           }}
                         >
                           {order.id}
@@ -310,7 +311,7 @@ export default function StudentOrders() {
                           {order.status}
                         </span>
                       </div>
-                      <div style={{ fontSize: 12, color: '#9CA3AF' }}>
+                      <div style={{ fontSize: 12, color: 'var(--text-light)' }}>
                         🏪 {order.shop} · {order.date}
                       </div>
                     </div>
@@ -323,7 +324,7 @@ export default function StudentOrders() {
                       style={{
                         fontSize: 17,
                         fontWeight: 800,
-                        color: '#1a5c3a',
+                        color: 'var(--secondary)',
                       }}
                     >
                       Rs. {order.total}
@@ -331,7 +332,7 @@ export default function StudentOrders() {
                     <span
                       style={{
                         fontSize: 18,
-                        color: '#9CA3AF',
+                        color: 'var(--text-light)',
                         transform: isOpen ? 'rotate(180deg)' : 'rotate(0)',
                         transition: 'transform 0.2s',
                         display: 'block',
@@ -364,9 +365,9 @@ export default function StudentOrders() {
               {isOpen && (
                 <div
                   style={{
-                    borderTop: '1px solid #F3F4F6',
+                    borderTop: '1px solid var(--border)',
                     padding: '16px 22px',
-                    background: '#FAFAFA',
+                    background: 'var(--bg-hover)',
                   }}
                 >
                   {/* Items */}
@@ -374,7 +375,7 @@ export default function StudentOrders() {
                     style={{
                       fontSize: 11,
                       fontWeight: 700,
-                      color: '#9CA3AF',
+                      color: 'var(--text-light)',
                       textTransform: 'uppercase',
                       letterSpacing: 0.5,
                       marginBottom: 10,
@@ -389,16 +390,16 @@ export default function StudentOrders() {
                         display: 'flex',
                         justifyContent: 'space-between',
                         fontSize: 14,
-                        color: '#374151',
+                        color: 'var(--text-secondary)',
                         padding: '6px 0',
-                        borderBottom: '1px solid #F3F4F6',
+                        borderBottom: '1px solid var(--border)',
                       }}
                     >
                       <span>
                         {it.name}{' '}
-                        <span style={{ color: '#9CA3AF' }}>× {it.qty}</span>
+                        <span style={{ color: 'var(--text-light)' }}>× {it.qty}</span>
                       </span>
-                      <span style={{ fontWeight: 700, color: '#1F2937' }}>
+                      <span style={{ fontWeight: 700, color: 'var(--text)' }}>
                         Rs. {it.price * it.qty}
                       </span>
                     </div>
@@ -411,14 +412,14 @@ export default function StudentOrders() {
                       justifyContent: 'space-between',
                       marginTop: 10,
                       paddingTop: 10,
-                      borderTop: '1.5px dashed #E5E7EB',
+                      borderTop: '1.5px dashed var(--border)',
                       fontSize: 15,
                       fontWeight: 800,
-                      color: '#1F2937',
+                      color: 'var(--text)',
                     }}
                   >
                     <span>Total</span>
-                    <span style={{ color: '#1a5c3a' }}>Rs. {order.total}</span>
+                    <span style={{ color: 'var(--secondary)' }}>Rs. {order.total}</span>
                   </div>
 
                   {/* Payment method */}
@@ -429,13 +430,13 @@ export default function StudentOrders() {
                       alignItems: 'center',
                       gap: 8,
                       fontSize: 13,
-                      color: '#6B7280',
+                      color: 'var(--text-secondary)',
                     }}
                   >
                     <span>💵</span>
                     <span>
                       Payment:{' '}
-                      <strong style={{ color: '#1F2937' }}>
+                      <strong style={{ color: 'var(--text)' }}>
                         {order.paymentMethod}
                       </strong>
                     </span>
@@ -448,7 +449,7 @@ export default function StudentOrders() {
                         marginTop: 16,
                         height: 40,
                         padding: '0 20px',
-                        background: '#f5a623',
+                        background: 'var(--primary)',
                         border: 'none',
                         borderRadius: 10,
                         color: '#fff',

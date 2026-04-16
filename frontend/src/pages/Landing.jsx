@@ -43,7 +43,7 @@ export default function Landing() {
   const navigate = useNavigate()
 
   return (
-    <div style={{ fontFamily: 'Poppins, sans-serif', background: '#fff' }}>
+    <div style={{ fontFamily: 'Poppins, sans-serif', background: 'var(--bg-card)' }}>
       {/* NAVBAR */}
       <nav
         style={{
@@ -51,10 +51,10 @@ export default function Landing() {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '16px 48px',
-          borderBottom: '1px solid #f0f0f0',
+          borderBottom: '1px solid var(--border-light)',
           position: 'sticky',
           top: 0,
-          background: '#fff',
+          background: 'var(--bg-card)',
           zIndex: 100,
         }}
       >
@@ -65,7 +65,7 @@ export default function Landing() {
             gap: 10,
             fontSize: 20,
             fontWeight: 800,
-            color: '#1a5c3a',
+            color: 'var(--secondary)',
           }}
         >
           <div
@@ -73,7 +73,7 @@ export default function Landing() {
               width: 38,
               height: 38,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg,#1a5c3a,#2d8a57)',
+              background: 'linear-gradient(135deg, var(--secondary), #2d8a57)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -82,7 +82,7 @@ export default function Landing() {
           >
             🍴
           </div>
-          UNI<span style={{ color: '#f5a623' }}>-KADE</span>
+          UNI<span style={{ color: 'var(--primary)' }}>-KADE</span>
         </div>
         <div
           style={{ display: 'flex', gap: 32, fontSize: 14, color: '#6B7280' }}
@@ -92,7 +92,7 @@ export default function Landing() {
               key={l}
               style={{
                 textDecoration: 'none',
-                color: '#6B7280',
+                color: 'var(--text-muted)',
                 cursor: 'pointer',
               }}
             >
@@ -103,7 +103,7 @@ export default function Landing() {
         <button
           onClick={() => navigate('/login')}
           style={{
-            background: '#f5a623',
+            background: 'var(--primary)',
             color: '#fff',
             border: 'none',
             padding: '10px 24px',
@@ -125,7 +125,7 @@ export default function Landing() {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '80px 48px',
-          background: 'linear-gradient(135deg,#fff9f0,#f0faf5)',
+          background: 'var(--bg-hover)',
           gap: 40,
         }}
       >
@@ -135,8 +135,8 @@ export default function Landing() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              background: '#fff3e0',
-              color: '#e65c00',
+              background: 'var(--warning-bg)',
+              color: 'var(--warning-text)',
               padding: '6px 14px',
               borderRadius: 20,
               fontSize: 12,
@@ -149,7 +149,7 @@ export default function Landing() {
                 width: 6,
                 height: 6,
                 borderRadius: '50%',
-                background: '#f5a623',
+                background: 'var(--primary)',
               }}
             />
             Now at your university campus
@@ -159,11 +159,11 @@ export default function Landing() {
               fontSize: 44,
               fontWeight: 800,
               lineHeight: 1.2,
-              color: '#1F2937',
+              color: 'var(--text)',
               marginBottom: 16,
             }}
           >
-            Diverse &amp; <span style={{ color: '#f5a623' }}>sparkling</span>
+            Diverse &amp; <span style={{ color: 'var(--primary)' }}>sparkling</span>
             <br />
             food, delivered
             <br />
@@ -172,7 +172,7 @@ export default function Landing() {
           <p
             style={{
               fontSize: 16,
-              color: '#6B7280',
+              color: 'var(--text-muted)',
               lineHeight: 1.7,
               marginBottom: 32,
               maxWidth: 440,
@@ -185,7 +185,7 @@ export default function Landing() {
             <button
               onClick={() => navigate('/login')}
               style={{
-                background: '#f5a623',
+                background: 'var(--primary)',
                 color: '#fff',
                 border: 'none',
                 padding: '14px 32px',
@@ -201,8 +201,8 @@ export default function Landing() {
             <button
               style={{
                 background: 'transparent',
-                color: '#1a5c3a',
-                border: '2px solid #1a5c3a',
+                color: 'var(--secondary)',
+                border: '2px solid var(--secondary)',
                 padding: '13px 28px',
                 borderRadius: 12,
                 fontSize: 15,
@@ -220,10 +220,10 @@ export default function Landing() {
         <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
           <div
             style={{
-              background: '#fff',
+              background: 'var(--bg-card)',
               borderRadius: 20,
               padding: '40px 32px',
-              boxShadow: '0 8px 40px rgba(0,0,0,0.08)',
+              boxShadow: 'var(--shadow-sm)',
               textAlign: 'center',
               maxWidth: 280,
               width: '100%',
@@ -234,13 +234,13 @@ export default function Landing() {
               style={{
                 fontSize: 16,
                 fontWeight: 700,
-                color: '#1F2937',
+                color: 'var(--text)',
                 marginBottom: 8,
               }}
             >
               Diverse &amp; sparkling food.
             </h3>
-            <p style={{ fontSize: 13, color: '#6B7280' }}>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
               Fresh ingredients, great taste, delivered on campus
             </p>
             {/* Dots like onboarding */}
@@ -257,7 +257,7 @@ export default function Landing() {
                   width: 20,
                   height: 4,
                   borderRadius: 2,
-                  background: '#f5a623',
+                  background: 'var(--primary)',
                 }}
               />
               <div
@@ -265,7 +265,7 @@ export default function Landing() {
                   width: 8,
                   height: 4,
                   borderRadius: 2,
-                  background: '#e5e7eb',
+                  background: 'var(--border)',
                 }}
               />
               <div
@@ -273,7 +273,7 @@ export default function Landing() {
                   width: 8,
                   height: 4,
                   borderRadius: 2,
-                  background: '#e5e7eb',
+                  background: 'var(--border)',
                 }}
               />
             </div>
@@ -288,7 +288,7 @@ export default function Landing() {
             textAlign: 'center',
             fontSize: 12,
             fontWeight: 700,
-            color: '#f5a623',
+            color: 'var(--primary)',
             textTransform: 'uppercase',
             letterSpacing: 2,
             marginBottom: 12,
@@ -301,7 +301,7 @@ export default function Landing() {
             textAlign: 'center',
             fontSize: 32,
             fontWeight: 800,
-            color: '#1F2937',
+            color: 'var(--text)',
             marginBottom: 48,
           }}
         >
@@ -318,11 +318,11 @@ export default function Landing() {
             <div
               key={f.title}
               style={{
-                background: '#f8f9fc',
+                background: 'var(--bg-hover)',
                 borderRadius: 20,
                 padding: '36px 28px',
                 textAlign: 'center',
-                border: '1.5px solid transparent',
+                border: '1.5px solid var(--border-light)',
                 transition: 'all 0.2s',
               }}
             >
@@ -345,13 +345,13 @@ export default function Landing() {
                 style={{
                   fontSize: 18,
                   fontWeight: 700,
-                  color: '#1F2937',
+                  color: 'var(--text)',
                   marginBottom: 10,
                 }}
               >
                 {f.title}
               </h3>
-              <p style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6 }}>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6 }}>
                 {f.desc}
               </p>
             </div>
@@ -363,7 +363,7 @@ export default function Landing() {
       <section
         style={{
           padding: '80px 48px',
-          background: 'linear-gradient(135deg,#1a5c3a,#2d8a57)',
+          background: 'linear-gradient(135deg, var(--secondary), #2d8a57)',
         }}
       >
         <p
@@ -371,7 +371,7 @@ export default function Landing() {
             textAlign: 'center',
             fontSize: 12,
             fontWeight: 700,
-            color: '#f5a623',
+            color: 'var(--primary)',
             textTransform: 'uppercase',
             letterSpacing: 2,
             marginBottom: 12,
@@ -404,7 +404,7 @@ export default function Landing() {
                   width: 48,
                   height: 48,
                   borderRadius: '50%',
-                  background: '#f5a623',
+                  background: 'var(--primary)',
                   color: '#fff',
                   fontSize: 20,
                   fontWeight: 800,
@@ -439,19 +439,19 @@ export default function Landing() {
           style={{
             fontSize: 36,
             fontWeight: 800,
-            color: '#1F2937',
+            color: 'var(--text)',
             marginBottom: 14,
           }}
         >
           Ready to start selling on campus?
         </h2>
-        <p style={{ fontSize: 16, color: '#6B7280', marginBottom: 36 }}>
+        <p style={{ fontSize: 16, color: 'var(--text-muted)', marginBottom: 36 }}>
           Join UNI-KADE and reach hundreds of students at your university today.
         </p>
         <button
           onClick={() => navigate('/login')}
           style={{
-            background: '#f5a623',
+            background: 'var(--primary)',
             color: '#fff',
             border: 'none',
             padding: '16px 40px',

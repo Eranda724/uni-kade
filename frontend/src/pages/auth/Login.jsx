@@ -39,7 +39,7 @@ export default function Login() {
       <div
         style={{
           width: '420px',
-          background: 'linear-gradient(155deg, #1a5c3a, #2d8a57 60%, #F5A623)',
+          background: 'linear-gradient(155deg, var(--secondary), #2d8a57 60%, var(--primary))',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -108,7 +108,7 @@ export default function Login() {
                   width: 8,
                   height: 8,
                   borderRadius: '50%',
-                  background: '#F5A623',
+                  background: 'var(--primary)',
                   flexShrink: 0,
                 }}
               />
@@ -126,14 +126,14 @@ export default function Login() {
           alignItems: 'center',
           justifyContent: 'center',
           padding: '48px',
-          background: '#fff',
+          background: 'var(--bg-card)',
         }}
       >
         <div style={{ width: '100%', maxWidth: 400 }}>
           <span
             style={{
-              background: '#fff3e0',
-              color: '#e65c00',
+              background: 'var(--warning-bg)',
+              color: 'var(--warning-text)',
               fontSize: 11,
               fontWeight: 700,
               padding: '3px 10px',
@@ -151,6 +151,7 @@ export default function Login() {
               fontWeight: 700,
               marginTop: 16,
               marginBottom: 4,
+              color: 'var(--text)',
             }}
           >
             Welcome Back
@@ -174,8 +175,8 @@ export default function Login() {
           {error && (
             <div
               style={{
-                background: '#fee2e2',
-                color: '#dc2626',
+                background: 'var(--danger-bg)',
+                color: 'var(--danger-text)',
                 padding: '12px 16px',
                 borderRadius: 10,
                 fontSize: 14,
@@ -217,6 +218,8 @@ export default function Login() {
                 marginBottom: 16,
                 outline: 'none',
                 fontFamily: 'Poppins',
+                background: 'var(--bg-card)',
+                color: 'var(--text)',
               }}
             />
 
@@ -251,6 +254,8 @@ export default function Login() {
                   fontSize: 14,
                   outline: 'none',
                   fontFamily: 'Poppins',
+                  background: 'var(--bg-card)',
+                  color: 'var(--text)',
                 }}
               />
               <span
@@ -287,7 +292,7 @@ export default function Login() {
               style={{
                 width: '100%',
                 height: 50,
-                background: loading ? '#ccc' : 'var(--primary)',
+                background: loading ? 'var(--border)' : 'var(--primary)',
                 border: 'none',
                 borderRadius: 'var(--radius)',
                 color: 'white',
@@ -323,7 +328,7 @@ export default function Login() {
               style={{
                 width: '100%',
                 height: 48,
-                background: '#fff',
+                background: 'var(--bg-card)',
                 border: '1.5px solid var(--border)',
                 borderRadius: 'var(--radius)',
                 display: 'flex',
@@ -333,6 +338,7 @@ export default function Login() {
                 fontSize: 14,
                 fontWeight: 600,
                 cursor: 'pointer',
+                color: 'var(--text)',
               }}
             >
               <div

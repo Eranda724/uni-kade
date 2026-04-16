@@ -96,17 +96,17 @@ const CATEGORIES = ['All', 'Food', 'Stationery', 'Printing', 'Lab Equipment']
 // ─── Helpers ──────────────────────────────────────────────────
 const S = {
   card: {
-    background: '#fff',
+    background: 'var(--bg-card)',
     borderRadius: 18,
-    border: '1px solid #F3F4F6',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
+    border: '1px solid var(--border-light)',
+    boxShadow: 'var(--shadow-sm)',
     cursor: 'pointer',
     transition: 'transform 0.15s, box-shadow 0.15s',
   },
   label: {
     fontSize: 11,
     fontWeight: 700,
-    color: '#6B7280',
+    color: 'var(--text-muted)',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -122,11 +122,11 @@ const S = {
 
 function lift(e) {
   e.currentTarget.style.transform = 'translateY(-4px)'
-  e.currentTarget.style.boxShadow = '0 10px 28px rgba(0,0,0,0.1)'
+  e.currentTarget.style.boxShadow = 'var(--shadow-lg)'
 }
 function drop(e) {
   e.currentTarget.style.transform = 'translateY(0)'
-  e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.04)'
+  e.currentTarget.style.boxShadow = 'var(--shadow-sm)'
 }
 
 // ─── Component ────────────────────────────────────────────────
@@ -162,7 +162,7 @@ export default function StudentHome() {
       {/* ── Welcome Banner ──────────────────────────────────── */}
       <div
         style={{
-          background: 'linear-gradient(135deg,#1a5c3a,#2d8a57)',
+          background: 'linear-gradient(135deg, var(--secondary), #2d8a57)',
           borderRadius: 20,
           padding: '28px 32px',
           marginBottom: 28,
@@ -214,7 +214,7 @@ export default function StudentHome() {
                 width: 22,
                 height: 22,
                 borderRadius: '50%',
-                background: '#f5a623',
+                background: 'var(--primary)',
                 color: '#fff',
                 fontSize: 11,
                 fontWeight: 800,
@@ -254,14 +254,14 @@ export default function StudentHome() {
           <input
             style={{
               height: 44,
-              border: '1.5px solid #E5E7EB',
+              border: '1.5px solid var(--border)',
               borderRadius: 12,
               padding: '0 16px 0 40px',
               fontSize: 14,
               fontFamily: 'Poppins',
               outline: 'none',
-              background: '#fff',
-              color: '#1F2937',
+              background: 'var(--bg-card)',
+              color: 'var(--text)',
               width: 260,
             }}
             placeholder="Search shops or items..."
@@ -278,9 +278,9 @@ export default function StudentHome() {
               style={{
                 padding: '7px 16px',
                 borderRadius: 9,
-                border: catFilter === c ? 'none' : '1.5px solid #E5E7EB',
-                background: catFilter === c ? '#f5a623' : '#fff',
-                color: catFilter === c ? '#fff' : '#6B7280',
+                border: catFilter === c ? 'none' : '1.5px solid var(--border)',
+                background: catFilter === c ? 'var(--primary)' : 'var(--bg-card)',
+                color: catFilter === c ? '#fff' : 'var(--text-muted)',
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -303,13 +303,13 @@ export default function StudentHome() {
             marginBottom: 16,
           }}
         >
-          <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1F2937' }}>
+          <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text)' }}>
             ✨ Popular Right Now
           </h2>
           <span
             style={{
               fontSize: 13,
-              color: '#f5a623',
+              color: 'var(--primary)',
               fontWeight: 600,
               cursor: 'pointer',
             }}
@@ -341,13 +341,13 @@ export default function StudentHome() {
                 style={{
                   fontSize: 14,
                   fontWeight: 700,
-                  color: '#1F2937',
+                  color: 'var(--text)',
                   marginBottom: 3,
                 }}
               >
                 {item.name}
               </div>
-              <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 12 }}>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>
                 {item.shop}
               </div>
               <div
@@ -358,14 +358,14 @@ export default function StudentHome() {
                 }}
               >
                 <span
-                  style={{ fontSize: 15, fontWeight: 800, color: '#1a5c3a' }}
+                  style={{ fontSize: 15, fontWeight: 800, color: 'var(--secondary)' }}
                 >
                   Rs. {item.price}
                 </span>
                 <button
                   onClick={() => addToCart(item)}
                   style={{
-                    background: '#f5a623',
+                    background: 'var(--primary)',
                     border: 'none',
                     borderRadius: 8,
                     color: '#fff',
@@ -394,14 +394,14 @@ export default function StudentHome() {
             marginBottom: 16,
           }}
         >
-          <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1F2937' }}>
+          <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text)' }}>
             🏪 Campus Shops
             <span
               style={{
                 marginLeft: 10,
                 fontSize: 13,
                 fontWeight: 600,
-                color: '#9CA3AF',
+                color: 'var(--text-light)',
               }}
             >
               ({filtered.length})
@@ -415,8 +415,9 @@ export default function StudentHome() {
             style={{
               textAlign: 'center',
               padding: '60px 20px',
-              background: '#F8F9FC',
+              background: 'var(--bg-card)',
               borderRadius: 20,
+              border: '1px solid var(--border)',
             }}
           >
             <div style={{ fontSize: 48, marginBottom: 12 }}>🔍</div>
@@ -424,13 +425,13 @@ export default function StudentHome() {
               style={{
                 fontSize: 16,
                 fontWeight: 700,
-                color: '#1F2937',
+                color: 'var(--text)',
                 marginBottom: 6,
               }}
             >
               No shops found
             </p>
-            <p style={{ fontSize: 14, color: '#9CA3AF', marginBottom: 20 }}>
+            <p style={{ fontSize: 14, color: 'var(--text-light)', marginBottom: 20 }}>
               Try a different search or category filter.
             </p>
             <button
@@ -439,7 +440,7 @@ export default function StudentHome() {
                 setCatFilter('All')
               }}
               style={{
-                background: '#f5a623',
+                background: 'var(--primary)',
                 border: 'none',
                 borderRadius: 10,
                 color: '#fff',
@@ -481,7 +482,7 @@ export default function StudentHome() {
                       width: 52,
                       height: 52,
                       borderRadius: 14,
-                      background: '#e8f5e9',
+                      background: 'var(--success-bg)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -496,7 +497,7 @@ export default function StudentHome() {
                       style={{
                         fontSize: 15,
                         fontWeight: 800,
-                        color: '#1F2937',
+                        color: 'var(--text)',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -504,15 +505,15 @@ export default function StudentHome() {
                     >
                       {shop.name}
                     </div>
-                    <div style={{ fontSize: 12, color: '#6B7280' }}>
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                       {shop.category}
                     </div>
                   </div>
                   {/* Open / Closed badge */}
                   <span
                     style={S.badge(
-                      shop.isOpen ? '#e8f5e9' : '#F3F4F6',
-                      shop.isOpen ? '#16a34a' : '#9CA3AF',
+                      shop.isOpen ? 'var(--success-bg)' : 'var(--border-light)',
+                      shop.isOpen ? 'var(--success-text)' : 'var(--text-light)',
                     )}
                   >
                     {shop.isOpen ? '● Open' : '○ Closed'}
@@ -527,10 +528,10 @@ export default function StudentHome() {
                     marginBottom: 14,
                   }}
                 >
-                  <span style={{ fontSize: 13, color: '#6B7280' }}>
+                  <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
                     {shop.products} products
                   </span>
-                  <span style={S.badge('#fff3e0', '#e65c00')}>
+                  <span style={S.badge('var(--warning-bg)', 'var(--warning-text)')}>
                     ⭐ {shop.rating}
                   </span>
                 </div>
@@ -541,10 +542,10 @@ export default function StudentHome() {
                   style={{
                     width: '100%',
                     height: 38,
-                    background: shop.isOpen ? '#f5a623' : '#E5E7EB',
+                    background: shop.isOpen ? 'var(--primary)' : 'var(--border)',
                     border: 'none',
                     borderRadius: 10,
-                    color: shop.isOpen ? '#fff' : '#9CA3AF',
+                    color: shop.isOpen ? '#fff' : 'var(--text-light)',
                     fontSize: 13,
                     fontWeight: 700,
                     cursor: shop.isOpen ? 'pointer' : 'not-allowed',
