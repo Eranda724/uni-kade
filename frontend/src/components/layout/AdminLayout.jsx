@@ -4,6 +4,7 @@ import ThemeToggle from '../common/ThemeToggle'
 
 const NAV = [
   { to: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
+  { to: '/admin/analytics', icon: '📈', label: 'Analytics' },
   { to: '/admin/sellers', icon: '🏪', label: 'Sellers' },
   { to: '/admin/orders', icon: '📦', label: 'All Orders' },
 ]

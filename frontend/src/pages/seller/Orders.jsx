@@ -414,206 +414,90 @@ export default function SellerOrders() {
         </div>
       )}
 
-      {/* ── Order Cards ──────────────────────────────────────── */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        {visible.map((order) => {
-          const total = order.items.reduce((s, it) => s + it.price * it.qty, 0)
-          const action = NEXT_ACTION[order.status]
-          const isOpen = expanded === order.id
-          const canReject = ['Pending', 'Preparing'].includes(order.status)
+      {/* ── Orders Table ─────────────────────────────────────── */}
+      <div style={{ overflowX: 'auto' }}>
+        <table
+          style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+            fontFamily: 'Poppins, sans-serif',
+          }}
+        >
+          <thead>
+            <tr style={{ textAlign: 'left' }}>
+              <th style={{ padding: '12px 16px', fontSize: 13 }}>Order</th>
+              <th style={{ padding: '12px 16px', fontSize: 13 }}>Student</th>
+              <th style={{ padding: '12px 16px', fontSize: 13 }}>Items</th>
+              <th style={{ padding: '12px 16px', fontSize: 13, textAlign: 'right' }}>Total</th>
+              <th style={{ padding: '12px 16px', fontSize: 13 }}>Time</th>
+              <th style={{ padding: '12px 16px', fontSize: 13 }}>Status</th>
+              <th style={{ padding: '12px 16px', fontSize: 13, textAlign: 'center' }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visible.map((order) => {
+              const total = order.items.reduce((s, it) => s + it.price * it.qty, 0)
+              const action = NEXT_ACTION[order.status]
+              const isOpen = expanded === order.id
+              const canReject = ['Pending', 'Preparing'].includes(order.status)
 
-          return (
-            <div
-              key={order.id}
-              style={{
-                background: 'var(--bg-card)',
-                borderRadius: 16,
-                border: '1px solid var(--border-light)',
-                boxShadow: 'var(--shadow-sm)',
-                overflow: 'hidden',
-              }}
-            >
-              {/* ── Card row (always visible) ── */}
-              <div
-                style={{
-                  padding: '18px 22px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 20,
-                }}
-              >
-                {/* Order ID + time */}
-                <div style={{ minWidth: 100 }}>
-                  <div
-                    style={{ fontSize: 13, fontWeight: 800, color: 'var(--text)' }}
+              return (
+                <>
+                  <tr
+                    key={order.id}
+                    style={{ borderBottom: '1px solid var(--border-light)' }}
                   >
-                    {order.id}
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 2 }}>
-                    {order.time}
-                  </div>
-                </div>
+                    <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+                      <div style={{ fontWeight: 800, color: 'var(--text)' }}>{order.id}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-light)' }}>{order.time}</div>
+                    </td>
+                    <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+                      <div style={{ fontWeight: 700, color: 'var(--text)' }}>{order.student}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{order.phone}</div>
+                    </td>
+                    <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+                      <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                        {order.items.map((it) => (
+                          <div key={it.name}>
+                            {it.name} × {it.qty} <span style={{ fontWeight: 700, marginLeft: 6 }}>Rs. {it.price * it.qty}</span>
+                          </div>
+                        ))}
+                        {order.note && <div style={{ fontSize: 12, color: 'var(--primary)', marginTop: 6 }}>📝 {order.note}</div>}
+                      </div>
+                    </td>
+                    <td style={{ padding: '12px 16px', verticalAlign: 'middle', textAlign: 'right', fontWeight: 800 }}>
+                      Rs. {total}
+                    </td>
+                    <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>{order.time}</td>
+                    <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+                      <span style={{ padding: '4px 10px', borderRadius: 8, fontWeight: 700, fontSize: 12, ...STATUS_STYLE[order.status] }}>{order.status}</span>
+                    </td>
+                    <td style={{ padding: '12px 16px', verticalAlign: 'middle', textAlign: 'center' }}>
+                      <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                        {action && (
+                          <button onClick={() => moveNext(order.id)} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: 'var(--primary)', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>{action.label}</button>
+                        )}
+                        {canReject && (
+                          <button onClick={() => setRejectTarget(order)} style={{ padding: '8px 10px', borderRadius: 8, border: '1.5px solid var(--danger-text)', background: 'var(--bg-card)', color: 'var(--danger-text)', fontWeight: 700, cursor: 'pointer' }}>✕</button>
+                        )}
+                        {order.status === 'Completed' && <span style={{ fontSize: 18 }}>✅</span>}
+                        <button onClick={() => setExpanded(isOpen ? null : order.id)} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)', cursor: 'pointer' }}>{isOpen ? '▴' : '▾'}</button>
+                      </div>
+                    </td>
+                  </tr>
 
-                {/* Student */}
-                <div style={{ minWidth: 130 }}>
-                  <div
-                    style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}
-                  >
-                    {order.student}
-                  </div>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                    {order.phone}
-                  </div>
-                </div>
-
-                {/* Items summary */}
-                <div style={{ flex: 1 }}>
-                  {order.items.map((it) => (
-                    <div
-                      key={it.name}
-                      style={{ fontSize: 13, color: 'var(--text-secondary)' }}
-                    >
-                      {it.name} × {it.qty}
-                      <span
-                        style={{
-                          color: 'var(--secondary)',
-                          fontWeight: 600,
-                          marginLeft: 4,
-                        }}
-                      >
-                        Rs. {it.price * it.qty}
-                      </span>
-                    </div>
-                  ))}
-                  {order.note && (
-                    <div
-                      style={{ fontSize: 11, color: 'var(--primary)', marginTop: 3 }}
-                    >
-                      📝 {order.note}
-                    </div>
+                  {isOpen && (
+                    <tr>
+                      <td colSpan={7} style={{ padding: 0 }}>
+                        <OrderDetail order={order} total={total} />
+                      </td>
+                    </tr>
                   )}
-                </div>
-
-                {/* Total */}
-                <div style={{ minWidth: 90, textAlign: 'right' }}>
-                  <div
-                    style={{ fontSize: 15, fontWeight: 800, color: 'var(--secondary)' }}
-                  >
-                    Rs. {total}
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--text-light)' }}>
-                    {order.items.length} item
-                    {order.items.length !== 1 ? 's' : ''}
-                  </div>
-                </div>
-
-                {/* Status badge */}
-                <div style={{ minWidth: 90, textAlign: 'center' }}>
-                  <span
-                    style={{
-                      padding: '4px 12px',
-                      borderRadius: 8,
-                      fontSize: 12,
-                      fontWeight: 700,
-                      ...STATUS_STYLE[order.status],
-                    }}
-                  >
-                    {order.status}
-                  </span>
-                </div>
-
-                {/* Actions */}
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  {/* Primary action */}
-                  {action && (
-                    <button
-                      onClick={() => moveNext(order.id)}
-                      style={{
-                        padding: '8px 14px',
-                        borderRadius: 10,
-                        border: 'none',
-                        background: 'var(--primary)',
-                        color: '#fff',
-                        fontSize: 12,
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        fontFamily: 'Poppins',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {action.label}
-                    </button>
-                  )}
-
-                  {/* Reject / cancel */}
-                  {canReject && (
-                    <button
-                      onClick={() => setRejectTarget(order)}
-                      style={{
-                        padding: '8px 12px',
-                        borderRadius: 10,
-                        border: '1.5px solid var(--danger-text)',
-                        background: 'var(--bg-card)',
-                        color: 'var(--danger-text)',
-                        fontSize: 12,
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        fontFamily: 'Poppins',
-                      }}
-                    >
-                      ✕
-                    </button>
-                  )}
-
-                  {/* Completed tick */}
-                  {order.status === 'Completed' && (
-                    <span style={{ fontSize: 20 }}>✅</span>
-                  )}
-
-                  {/* Expand toggle */}
-                  <button
-                    onClick={() => setExpanded(isOpen ? null : order.id)}
-                    style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: 8,
-                      border: '1.5px solid var(--border)',
-                      background: 'var(--bg-input)',
-                      cursor: 'pointer',
-                      fontSize: 14,
-                      color: 'var(--text-muted)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transform: isOpen ? 'rotate(180deg)' : 'none',
-                      transition: 'transform 0.2s',
-                    }}
-                  >
-                    ▾
-                  </button>
-                </div>
-              </div>
-
-              {/* ── Expanded detail ── */}
-              {isOpen && <OrderDetail order={order} total={total} />}
-
-              {/* ── Cancel reason (if cancelled) ── */}
-              {order.status === 'Cancelled' && order.cancelReason && (
-                <div
-                  style={{
-                    borderTop: '1px solid var(--border-light)',
-                    padding: '10px 22px',
-                    background: 'var(--danger-bg)',
-                    fontSize: 12,
-                    color: 'var(--danger-text)',
-                  }}
-                >
-                  ❌ Cancelled: {order.cancelReason}
-                </div>
-              )}
-            </div>
-          )
-        })}
+                </>
+              )
+            })}
+          </tbody>
+        </table>
       </div>
 
       {/* ── Reject Modal ─────────────────────────────────────── */}

@@ -2,10 +2,19 @@ const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const dotenv = require('dotenv')
+const dns = require('dns')
 const http = require('http')
 const authRoutes = require('./routes/authRoutes')
 
 dotenv.config()
+
+// Force Node's DNS resolver to use a public DNS server for SRV lookups
+try {
+  dns.setServers(['8.8.8.8'])
+  console.log('ℹ️ DNS servers set to:', dns.getServers())
+} catch (e) {
+  console.warn('⚠️ Failed to set DNS servers:', e.message)
+}
 
 console.log('📋 Environment variables loaded:')
 console.log('PORT:', process.env.PORT)
@@ -31,10 +40,12 @@ app.use('/api/auth', authRoutes)
 const productRoutes = require('./routes/productRoutes')
 const orderRoutes = require('./routes/orderRoutes')
 const userRoutes = require('./routes/userRoutes')
+const analyticsRoutes = require('./routes/analyticsRoutes')
 
 app.use('/api/products', productRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/users', userRoutes)
+app.use('/api/analytics', analyticsRoutes)
 
 // MongoDB connect + start server
 const PORT = process.env.PORT || 5000

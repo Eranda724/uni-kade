@@ -31,6 +31,7 @@ import StudentProfile from './pages/student/Profile'
 import AdminDashboard from './pages/admin/Dashboard'
 import AdminSellers from './pages/admin/Sellers'
 import AdminOrders from './pages/admin/Orders'
+import AdminAnalytics from './pages/admin/Analytics'
 
 function App() {
   return (
@@ -86,6 +87,7 @@ function App() {
             >
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
               <Route path="sellers" element={<AdminSellers />} />
               <Route path="orders" element={<AdminOrders />} />
             </Route>
