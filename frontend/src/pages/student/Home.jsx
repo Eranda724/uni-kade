@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useCart } from '../../context/useCart.jsx'
 
 // ─── Mock Data ────────────────────────────────────────────────
 const MOCK_SHOPS = [
@@ -61,6 +62,7 @@ const MOCK_FEATURED = [
     id: 1,
     name: 'Rice & Curry',
     shop: "Mama's Kitchen",
+    shopId: 1,
     price: 190,
     icon: '🍛',
     category: 'Food',
@@ -69,6 +71,7 @@ const MOCK_FEATURED = [
     id: 2,
     name: 'A4 Paper (500 sheets)',
     shop: 'NoteHub',
+    shopId: 3,
     price: 450,
     icon: '📄',
     category: 'Stationery',
@@ -77,6 +80,7 @@ const MOCK_FEATURED = [
     id: 3,
     name: 'Color Print (A4)',
     shop: 'Campus Prints',
+    shopId: 2,
     price: 25,
     icon: '🖨️',
     category: 'Printing',
@@ -85,6 +89,7 @@ const MOCK_FEATURED = [
     id: 4,
     name: 'Kottu Roti',
     shop: 'Quick Bites',
+    shopId: 4,
     price: 250,
     icon: '🥘',
     category: 'Food',
@@ -132,30 +137,17 @@ function drop(e) {
 // ─── Component ────────────────────────────────────────────────
 export default function StudentHome() {
   const { user } = useAuth()
+  const { cartCount, addItem } = useCart()
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [catFilter, setCatFilter] = useState('All')
-  const [cart, setCart] = useState([]) // { id, name, price, qty }
 
   // ── Derived ────────────────────────────────────────────────
   const filtered = MOCK_SHOPS.filter(
     (s) =>
-      (catFilter === 'All' || s.category === catFilter) &&
+      (catFilter === 'All' || s.category === s.category) &&
       s.name.toLowerCase().includes(search.toLowerCase()),
   )
-
-  const cartCount = cart.reduce((sum, i) => sum + i.qty, 0)
-
-  const addToCart = (item) => {
-    setCart((prev) => {
-      const found = prev.find((i) => i.id === item.id)
-      if (found)
-        return prev.map((i) =>
-          i.id === item.id ? { ...i, qty: i.qty + 1 } : i,
-        )
-      return [...prev, { ...item, qty: 1 }]
-    })
-  }
 
   return (
     <div style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -363,7 +355,7 @@ export default function StudentHome() {
                   Rs. {item.price}
                 </span>
                 <button
-                  onClick={() => addToCart(item)}
+                  onClick={() => addItem(item)}
                   style={{
                     background: 'var(--primary)',
                     border: 'none',
