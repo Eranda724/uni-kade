@@ -7,9 +7,12 @@ const INIT_ORDERS = [
     student: 'Kasun Perera',
     phone: '077-111-2222',
     items: [{ name: 'Rice & Curry', qty: 2, price: 190 }],
+    date: '2026-05-17',
     time: '10:02 AM',
-    status: 'Pending',
-    note: 'Less spicy please',
+    status: 'Completed',
+    note: '',
+    paymentMethod: 'Cash on Pickup',
+    paymentStatus: 'Paid',
   },
   {
     id: '#ORD-002',
@@ -19,27 +22,36 @@ const INIT_ORDERS = [
       { name: 'Kottu', qty: 1, price: 250 },
       { name: 'Fresh Juice', qty: 1, price: 60 },
     ],
+    date: '2026-05-17',
     time: '10:08 AM',
-    status: 'Preparing',
+    status: 'Completed',
     note: '',
+    paymentMethod: 'Cash on Pickup',
+    paymentStatus: 'Paid',
   },
   {
     id: '#ORD-003',
     student: 'Ashan Fernando',
     phone: '076-555-6666',
     items: [{ name: 'Short Eats', qty: 4, price: 40 }],
+    date: '2026-05-16',
     time: '10:14 AM',
-    status: 'Ready',
-    note: 'Extra sauce!',
+    status: 'Completed',
+    note: '',
+    paymentMethod: 'Cash on Pickup',
+    paymentStatus: 'Paid',
   },
   {
     id: '#ORD-004',
     student: 'Dinusha Ranasinghe',
     phone: '070-777-8888',
     items: [{ name: 'Fried Rice', qty: 1, price: 220 }],
+    date: '2026-05-15',
     time: '9:45 AM',
     status: 'Completed',
     note: '',
+    paymentMethod: 'Cash on Pickup',
+    paymentStatus: 'Paid',
   },
   {
     id: '#ORD-005',
@@ -49,9 +61,78 @@ const INIT_ORDERS = [
       { name: 'Noodles', qty: 1, price: 180 },
       { name: 'Water', qty: 2, price: 30 },
     ],
+    date: '2026-05-14',
     time: '9:30 AM',
-    status: 'Cancelled',
+    status: 'Completed',
     note: '',
+    paymentMethod: 'Cash on Pickup',
+    paymentStatus: 'Paid',
+  },
+  {
+    id: '#ORD-006',
+    student: 'Samantha Kumari',
+    phone: '071-222-3333',
+    items: [{ name: 'Vegetable Rice', qty: 1, price: 180 }],
+    date: '2026-05-13',
+    time: '2:15 PM',
+    status: 'Completed',
+    note: '',
+    paymentMethod: 'Cash on Pickup',
+    paymentStatus: 'Paid',
+  },
+  {
+    id: '#ORD-007',
+    student: 'Rajitha Perera',
+    phone: '077-333-4444',
+    items: [
+      { name: 'Chicken Kottu', qty: 2, price: 280 },
+      { name: 'Iced Coffee', qty: 1, price: 70 },
+    ],
+    date: '2026-05-12',
+    time: '11:30 AM',
+    status: 'Completed',
+    note: '',
+    paymentMethod: 'Cash on Pickup',
+    paymentStatus: 'Paid',
+  },
+  {
+    id: '#ORD-008',
+    student: 'Madhavi Silva',
+    phone: '076-444-5555',
+    items: [{ name: 'Pasta', qty: 1, price: 250 }],
+    date: '2026-05-10',
+    time: '3:45 PM',
+    status: 'Completed',
+    note: '',
+    paymentMethod: 'Cash on Pickup',
+    paymentStatus: 'Paid',
+  },
+  {
+    id: '#ORD-009',
+    student: 'Thilina Gunasekara',
+    phone: '075-555-6666',
+    items: [
+      { name: 'Sandwich', qty: 3, price: 120 },
+      { name: 'Tea', qty: 2, price: 40 },
+    ],
+    date: '2026-05-05',
+    time: '8:20 AM',
+    status: 'Completed',
+    note: '',
+    paymentMethod: 'Cash on Pickup',
+    paymentStatus: 'Paid',
+  },
+  {
+    id: '#ORD-010',
+    student: 'Nadeeka Rajapakse',
+    phone: '072-666-7777',
+    items: [{ name: 'Wrap', qty: 2, price: 150 }],
+    date: '2026-04-28',
+    time: '1:15 PM',
+    status: 'Completed',
+    note: '',
+    paymentMethod: 'Cash on Pickup',
+    paymentStatus: 'Paid',
   },
 ]
 
@@ -60,18 +141,26 @@ const STATUS_STYLE = {
   Pending: { bg: 'var(--warning-bg)', color: 'var(--warning-text)' },
   Preparing: { bg: 'var(--info-bg)', color: 'var(--info-text)' },
   Ready: { bg: 'var(--success-bg)', color: 'var(--success-text)' },
+  Delivered: { bg: 'var(--success-bg)', color: 'var(--success-text)' },
   Completed: { bg: 'var(--bg-hover)', color: 'var(--text-muted)' },
   Cancelled: { bg: 'var(--danger-bg)', color: 'var(--danger-text)' },
+}
+
+const PAYMENT_STYLE = {
+  Paid: { bg: 'var(--success-bg)', color: 'var(--success-text)' },
+  Unpaid: { bg: 'var(--warning-bg)', color: 'var(--warning-text)' },
+  Refunded: { bg: 'var(--danger-bg)', color: 'var(--danger-text)' },
 }
 
 // Status flow: what button label shows and what status it moves to
 const NEXT_ACTION = {
   Pending: { label: '✅ Confirm', next: 'Preparing' },
   Preparing: { label: '🍳 Mark Ready', next: 'Ready' },
-  Ready: { label: '🏁 Completed', next: 'Completed' },
+  Ready: { label: '🚚 Deliver', next: 'Delivered' },
+  Delivered: { label: '🏁 Completed', next: 'Completed' },
 }
 
-const TABS = ['All', 'Pending', 'Preparing', 'Ready', 'Completed', 'Cancelled']
+const TABS = ['All', 'Pending', 'Preparing', 'Ready', 'Delivered', 'Completed', 'Cancelled']
 
 // ─── Reject Modal ─────────────────────────────────────────────
 function RejectModal({ order, onClose, onConfirm }) {
@@ -358,14 +447,9 @@ export default function SellerOrders() {
             style={{
               padding: '7px 16px',
               borderRadius: 9,
-              border: 'none',
-              background: tab === s ? 'var(--primary)' : 'var(--bg-card)',
-              color: tab === s ? '#fff' : 'var(--text-muted)',
-              fontWeight: 600,
-              fontSize: 13,
-              cursor: 'pointer',
-              fontFamily: 'Poppins',
-              border: tab === s ? 'none' : '1.5px solid var(--border)',
+border: tab === s ? 'none' : '1.5px solid var(--border)',
+               background: tab === s ? 'var(--primary)' : 'var(--bg-card)',
+               color: tab === s ? '#fff' : 'var(--text-muted)',
             }}
           >
             {s}

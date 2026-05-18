@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import ThemeToggle from '../common/ThemeToggle'
 
@@ -6,12 +6,12 @@ const NAV = [
   { to: '/seller/dashboard', icon: '📊', label: 'Dashboard' },
   { to: '/seller/products', icon: '🛍️', label: 'Products' },
   { to: '/seller/orders', icon: '📦', label: 'Orders' },
+  { to: '/seller/order-history', icon: '📈', label: 'Order History' },
   { to: '/seller/profile', icon: '🏪', label: 'Shop Profile' },
 ]
 
 export default function SellerLayout() {
   const { user, logout } = useAuth()
-  const navigate = useNavigate()
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Poppins, sans-serif', background: 'var(--bg)', transition: 'all 0.3s ease' }}>

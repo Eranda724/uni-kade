@@ -21,6 +21,7 @@ import ForgotPassword from './pages/auth/ForgotPassword'
 import SellerDashboard from './pages/seller/Dashboard'
 import SellerProducts from './pages/seller/Products'
 import SellerOrders from './pages/seller/Orders'
+import SellerOrderHistory from './pages/seller/OrderHistory'
 import SellerProfile from './pages/seller/Profile'
 
 // Student pages
@@ -62,6 +63,7 @@ function App() {
                 <Route path="dashboard" element={<SellerDashboard />} />
                 <Route path="products" element={<SellerProducts />} />
                 <Route path="orders" element={<SellerOrders />} />
+                <Route path="order-history" element={<SellerOrderHistory />} />
                 <Route path="profile" element={<SellerProfile />} />
               </Route>
 
