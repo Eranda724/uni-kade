@@ -6,9 +6,48 @@ const Order = require('../models/Order')
 // @access  Private/Student
 exports.getActiveShops = async (req, res) => {
   try {
-    const shops = await User.find({ role: 'seller', status: 'approved' })
-      .select('name shopName shopDescription university facultyArea category')
-    res.json(shops)
+    const shops = await User.aggregate([
+      { $match: { role: 'seller', status: 'approved' } },
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: 'seller',
+          as: 'products'
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          shopName: 1,
+          shopDescription: 1,
+          university: 1,
+          facultyArea: 1,
+          category: 1,
+          productCount: { $size: '$products' }
+        }
+      }
+    ]);
+    res.json(shops);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
+
+// @desc    Get user by ID
+// @route   GET /api/users/:id
+// @access  Public (for shop viewing)
+exports.getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+      .select('-password') // Exclude password from response
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    res.json(user)
   } catch (err) {
     res.status(500).json({ message: err.message })
   }

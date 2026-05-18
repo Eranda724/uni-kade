@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { getActiveShops, updateUserProfile, getAdminStats } = require('../controllers/userController')
+const { getActiveShops, updateUserProfile, getAdminStats, getUserById } = require('../controllers/userController')
 const { protect, authorize } = require('../middleware/authMiddleware')
 
 router.route('/shops')
@@ -11,5 +11,8 @@ router.route('/profile')
 
 router.route('/admin/stats')
   .get(protect, authorize('admin'), getAdminStats)
+
+router.route('/:id')
+  .get(getUserById)
 
 module.exports = router

@@ -26,6 +26,7 @@ import SellerProfile from './pages/seller/Profile'
 import StudentHome from './pages/student/Home'
 import StudentOrders from './pages/student/Orders'
 import StudentProfile from './pages/student/Profile'
+import ShopProducts from './pages/student/ShopProducts'
 
 // Admin pages
 import AdminDashboard from './pages/admin/Dashboard'
@@ -72,6 +73,7 @@ function App() {
             >
               <Route index element={<Navigate to="/student/home" replace />} />
               <Route path="home" element={<StudentHome />} />
+              <Route path="shop/:shopId" element={<ShopProducts />} />
               <Route path="orders" element={<StudentOrders />} />
               <Route path="profile" element={<StudentProfile />} />
             </Route>
