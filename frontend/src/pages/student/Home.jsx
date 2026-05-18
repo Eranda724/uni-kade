@@ -1,102 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/useCart.jsx'
+import API from '../../services/api'
 
-// ─── Mock Data ────────────────────────────────────────────────
-const MOCK_SHOPS = [
-  {
-    id: 1,
-    name: "Mama's Kitchen",
-    category: 'Food',
-    university: 'University of Moratuwa',
-    rating: 4.8,
-    products: 12,
-    isOpen: true,
-    icon: '🍱',
-  },
-  {
-    id: 2,
-    name: 'Campus Prints',
-    category: 'Printing',
-    university: 'University of Moratuwa',
-    rating: 4.6,
-    products: 8,
-    isOpen: true,
-    icon: '🖨️',
-  },
-  {
-    id: 3,
-    name: 'NoteHub',
-    category: 'Stationery',
-    university: 'University of Moratuwa',
-    rating: 4.5,
-    products: 24,
-    isOpen: false,
-    icon: '📚',
-  },
-  {
-    id: 4,
-    name: 'Quick Bites',
-    category: 'Food',
-    university: 'University of Moratuwa',
-    rating: 4.7,
-    products: 9,
-    isOpen: true,
-    icon: '🥗',
-  },
-  {
-    id: 5,
-    name: 'Lab Mart',
-    category: 'Lab Equipment',
-    university: 'University of Moratuwa',
-    rating: 4.3,
-    products: 31,
-    isOpen: false,
-    icon: '🔬',
-  },
-]
-
-const MOCK_FEATURED = [
-  {
-    id: 1,
-    name: 'Rice & Curry',
-    shop: "Mama's Kitchen",
-    shopId: 1,
-    price: 190,
-    icon: '🍛',
-    category: 'Food',
-  },
-  {
-    id: 2,
-    name: 'A4 Paper (500 sheets)',
-    shop: 'NoteHub',
-    shopId: 3,
-    price: 450,
-    icon: '📄',
-    category: 'Stationery',
-  },
-  {
-    id: 3,
-    name: 'Color Print (A4)',
-    shop: 'Campus Prints',
-    shopId: 2,
-    price: 25,
-    icon: '🖨️',
-    category: 'Printing',
-  },
-  {
-    id: 4,
-    name: 'Kottu Roti',
-    shop: 'Quick Bites',
-    shopId: 4,
-    price: 250,
-    icon: '🥘',
-    category: 'Food',
-  },
-]
-
-const CATEGORIES = ['All', 'Food', 'Stationery', 'Printing', 'Lab Equipment']
+const CATEGORIES = ['All', 'Food', 'Stationery', 'Printing', 'Lab Equipment', 'Other']
 
 // ─── Helpers ──────────────────────────────────────────────────
 const S = {
@@ -134,6 +42,19 @@ function drop(e) {
   e.currentTarget.style.boxShadow = 'var(--shadow-sm)'
 }
 
+// ─── Category icon map ────────────────────────────────────────
+function shopIcon(category) {
+  const map = {
+    Food: '🍱',
+    Printing: '🖨️',
+    Stationery: '📚',
+    'Lab Equipment': '🔬',
+    Drinks: '🥤',
+    Other: '🏪',
+  }
+  return map[category] || '🏪'
+}
+
 // ─── Component ────────────────────────────────────────────────
 export default function StudentHome() {
   const { user } = useAuth()
@@ -141,13 +62,73 @@ export default function StudentHome() {
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [catFilter, setCatFilter] = useState('All')
+  const [shops, setShops] = useState([])
+  const [featuredProducts, setFeaturedProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  // ── Derived ────────────────────────────────────────────────
-  const filtered = MOCK_SHOPS.filter(
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const shopsRes = await API.get('/users/shops')
+        setShops(shopsRes.data)
+
+        // Load featured products: get first 4 active products across all shops
+        if (shopsRes.data.length > 0) {
+          const firstShopId = shopsRes.data[0]._id
+          try {
+            const prodRes = await API.get(`/products/shop/${firstShopId}`)
+            setFeaturedProducts(prodRes.data.slice(0, 4).map(p => ({
+              ...p,
+              shopId: firstShopId,
+              shop: shopsRes.data[0].shopName || shopsRes.data[0].name,
+            })))
+          } catch {
+            // Featured products unavailable — just show empty
+          }
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load shops')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  const filtered = shops.filter(
     (s) =>
-      (catFilter === 'All' || s.category === s.category) &&
-      s.name.toLowerCase().includes(search.toLowerCase()),
+      (catFilter === 'All' || s.category === catFilter) &&
+      (s.shopName || s.name || '').toLowerCase().includes(search.toLowerCase()),
   )
+
+  if (loading) {
+    return (
+      <div style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', padding: '80px 20px' }}>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>⏳</div>
+        <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Loading shops...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center', padding: '80px 20px' }}>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>⚠️</div>
+        <p style={{ color: 'var(--danger-text)', fontSize: 14 }}>{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          style={{
+            marginTop: 16, background: 'var(--primary)', border: 'none', borderRadius: 10,
+            color: '#fff', padding: '10px 24px', fontSize: 14, fontWeight: 700, cursor: 'pointer',
+          }}
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -172,7 +153,7 @@ export default function StudentHome() {
             Hey {user?.name?.split(' ')[0] || 'Student'} 👋
           </h1>
           <p style={{ fontSize: 14, opacity: 0.85 }}>
-            Browse shops and order from your campus canteen.
+            {shops.length} shop{shops.length !== 1 ? 's' : ''} available on your campus.
           </p>
         </div>
 
@@ -193,26 +174,16 @@ export default function StudentHome() {
         >
           <span style={{ fontSize: 32 }}>🛒</span>
           <span style={{ fontSize: 12, fontWeight: 700 }}>
-            {cartCount > 0
-              ? `${cartCount} item${cartCount > 1 ? 's' : ''}`
-              : 'Cart'}
+            {cartCount > 0 ? `${cartCount} item${cartCount > 1 ? 's' : ''}` : 'Cart'}
           </span>
           {cartCount > 0 && (
             <div
               style={{
-                position: 'absolute',
-                top: -6,
-                right: -6,
-                width: 22,
-                height: 22,
-                borderRadius: '50%',
-                background: 'var(--primary)',
-                color: '#fff',
-                fontSize: 11,
-                fontWeight: 800,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                position: 'absolute', top: -6, right: -6,
+                width: 22, height: 22, borderRadius: '50%',
+                background: 'var(--primary)', color: '#fff',
+                fontSize: 11, fontWeight: 800,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
             >
               {cartCount}
@@ -222,41 +193,18 @@ export default function StudentHome() {
       </div>
 
       {/* ── Search + Filter ─────────────────────────────────── */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 14,
-          marginBottom: 28,
-          flexWrap: 'wrap',
-          alignItems: 'center',
-        }}
-      >
+      <div style={{ display: 'flex', gap: 14, marginBottom: 28, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative' }}>
-          <span
-            style={{
-              position: 'absolute',
-              left: 14,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              fontSize: 16,
-            }}
-          >
+          <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 16 }}>
             🔍
           </span>
           <input
             style={{
-              height: 44,
-              border: '1.5px solid var(--border)',
-              borderRadius: 12,
-              padding: '0 16px 0 40px',
-              fontSize: 14,
-              fontFamily: 'Poppins',
-              outline: 'none',
-              background: 'var(--bg-card)',
-              color: 'var(--text)',
-              width: 260,
+              height: 44, border: '1.5px solid var(--border)', borderRadius: 12,
+              padding: '0 16px 0 40px', fontSize: 14, fontFamily: 'Poppins',
+              outline: 'none', background: 'var(--bg-card)', color: 'var(--text)', width: 260,
             }}
-            placeholder="Search shops or items..."
+            placeholder="Search shops..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -268,15 +216,11 @@ export default function StudentHome() {
               key={c}
               onClick={() => setCatFilter(c)}
               style={{
-                padding: '7px 16px',
-                borderRadius: 9,
+                padding: '7px 16px', borderRadius: 9,
                 border: catFilter === c ? 'none' : '1.5px solid var(--border)',
                 background: catFilter === c ? 'var(--primary)' : 'var(--bg-card)',
                 color: catFilter === c ? '#fff' : 'var(--text-muted)',
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: 'pointer',
-                fontFamily: 'Poppins',
+                fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins',
               }}
             >
               {c}
@@ -286,268 +230,139 @@ export default function StudentHome() {
       </div>
 
       {/* ── Featured Items ───────────────────────────────────── */}
-      <section style={{ marginBottom: 36 }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: 16,
-          }}
-        >
-          <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text)' }}>
-            ✨ Popular Right Now
-          </h2>
-          <span
-            style={{
-              fontSize: 13,
-              color: 'var(--primary)',
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            See all →
-          </span>
-        </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-            gap: 16,
-          }}
-        >
-          {MOCK_FEATURED.map((item) => (
-            <div
-              key={item.id}
-              style={{ ...S.card, padding: '20px 18px' }}
-              onMouseEnter={lift}
-              onMouseLeave={drop}
-            >
+      {featuredProducts.length > 0 && (
+        <section style={{ marginBottom: 36 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text)' }}>✨ Popular Right Now</h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
+            {featuredProducts.map((item) => (
               <div
-                style={{ fontSize: 40, textAlign: 'center', marginBottom: 10 }}
+                key={item._id}
+                style={{ ...S.card, padding: '20px 18px' }}
+                onMouseEnter={lift}
+                onMouseLeave={drop}
               >
-                {item.icon}
+                <div style={{ fontSize: 40, textAlign: 'center', marginBottom: 10 }}>📦</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 3 }}>
+                  {item.name}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>{item.shop}</div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--secondary)' }}>
+                    Rs. {item.price}
+                  </span>
+                  <button
+                    onClick={() => addItem(item)}
+                    style={{
+                      background: 'var(--primary)', border: 'none', borderRadius: 8,
+                      color: '#fff', padding: '5px 12px', fontSize: 12,
+                      fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins',
+                    }}
+                  >
+                    + Add
+                  </button>
+                </div>
               </div>
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 700,
-                  color: 'var(--text)',
-                  marginBottom: 3,
-                }}
-              >
-                {item.name}
-              </div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>
-                {item.shop}
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <span
-                  style={{ fontSize: 15, fontWeight: 800, color: 'var(--secondary)' }}
-                >
-                  Rs. {item.price}
-                </span>
-                <button
-                  onClick={() => addItem(item)}
-                  style={{
-                    background: 'var(--primary)',
-                    border: 'none',
-                    borderRadius: 8,
-                    color: '#fff',
-                    padding: '5px 12px',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    fontFamily: 'Poppins',
-                  }}
-                >
-                  + Add
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── Campus Shops ────────────────────────────────────── */}
       <section>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: 16,
-          }}
-        >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text)' }}>
             🏪 Campus Shops
-            <span
-              style={{
-                marginLeft: 10,
-                fontSize: 13,
-                fontWeight: 600,
-                color: 'var(--text-light)',
-              }}
-            >
+            <span style={{ marginLeft: 10, fontSize: 13, fontWeight: 600, color: 'var(--text-light)' }}>
               ({filtered.length})
             </span>
           </h2>
         </div>
 
         {filtered.length === 0 ? (
-          // ── Empty state ──
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '60px 20px',
-              background: 'var(--bg-card)',
-              borderRadius: 20,
-              border: '1px solid var(--border)',
-            }}
-          >
+          <div style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--bg-card)', borderRadius: 20, border: '1px solid var(--border)' }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>🔍</div>
-            <p
-              style={{
-                fontSize: 16,
-                fontWeight: 700,
-                color: 'var(--text)',
-                marginBottom: 6,
-              }}
-            >
-              No shops found
-            </p>
+            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>No shops found</p>
             <p style={{ fontSize: 14, color: 'var(--text-light)', marginBottom: 20 }}>
               Try a different search or category filter.
             </p>
             <button
-              onClick={() => {
-                setSearch('')
-                setCatFilter('All')
-              }}
+              onClick={() => { setSearch(''); setCatFilter('All') }}
               style={{
-                background: 'var(--primary)',
-                border: 'none',
-                borderRadius: 10,
-                color: '#fff',
-                padding: '10px 24px',
-                fontSize: 14,
-                fontWeight: 700,
-                cursor: 'pointer',
-                fontFamily: 'Poppins',
+                background: 'var(--primary)', border: 'none', borderRadius: 10,
+                color: '#fff', padding: '10px 24px', fontSize: 14,
+                fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins',
               }}
             >
               Clear Filters
             </button>
           </div>
         ) : (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-              gap: 20,
-            }}
-          >
-            {filtered.map((shop) => (
-              <div
-                key={shop.id}
-                style={{ ...S.card, padding: '24px 20px' }}
-                onMouseEnter={lift}
-                onMouseLeave={drop}
-              >
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 20 }}>
+            {filtered.map((shop) => {
+              const name = shop.shopName || shop.name || 'Unknown Shop'
+              const isOpen = shop.isOpen !== false
+              return (
                 <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 14,
-                    marginBottom: 14,
-                  }}
+                  key={shop._id}
+                  style={{ ...S.card, padding: '24px 20px' }}
+                  onMouseEnter={lift}
+                  onMouseLeave={drop}
                 >
-                  <div
-                    style={{
-                      width: 52,
-                      height: 52,
-                      borderRadius: 14,
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
+                    <div style={{
+                      width: 52, height: 52, borderRadius: 14,
                       background: 'var(--success-bg)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 26,
-                      flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 26, flexShrink: 0,
+                    }}>
+                      {shopIcon(shop.category)}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{
+                        fontSize: 15, fontWeight: 800, color: 'var(--text)',
+                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                      }}>
+                        {name}
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{shop.category}</div>
+                    </div>
+                    <span style={S.badge(
+                      isOpen ? 'var(--success-bg)' : 'var(--border-light)',
+                      isOpen ? 'var(--success-text)' : 'var(--text-light)',
+                    )}>
+                      {isOpen ? '● Open' : '○ Closed'}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                    <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                      {shop.productCount ?? 0} products
+                    </span>
+                    {shop.university && (
+                      <span style={{ fontSize: 11, color: 'var(--text-light)' }}>🎓 {shop.university}</span>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => navigate(`/student/shop/${shop._id}`)}
+                    disabled={!isOpen}
+                    style={{
+                      width: '100%', height: 38,
+                      background: isOpen ? 'var(--primary)' : 'var(--border)',
+                      border: 'none', borderRadius: 10,
+                      color: isOpen ? '#fff' : 'var(--text-light)',
+                      fontSize: 13, fontWeight: 700,
+                      cursor: isOpen ? 'pointer' : 'not-allowed',
+                      fontFamily: 'Poppins',
                     }}
                   >
-                    {shop.icon}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{
-                        fontSize: 15,
-                        fontWeight: 800,
-                        color: 'var(--text)',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {shop.name}
-                    </div>
-                    <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                      {shop.category}
-                    </div>
-                  </div>
-                  {/* Open / Closed badge */}
-                  <span
-                    style={S.badge(
-                      shop.isOpen ? 'var(--success-bg)' : 'var(--border-light)',
-                      shop.isOpen ? 'var(--success-text)' : 'var(--text-light)',
-                    )}
-                  >
-                    {shop.isOpen ? '● Open' : '○ Closed'}
-                  </span>
+                    {isOpen ? 'View Shop →' : 'Currently Closed'}
+                  </button>
                 </div>
-
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: 14,
-                  }}
-                >
-                  <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-                    {shop.products} products
-                  </span>
-                  <span style={S.badge('var(--warning-bg)', 'var(--warning-text)')}>
-                    ⭐ {shop.rating}
-                  </span>
-                </div>
-
-                <button
-                  onClick={() => navigate(`/student/shop/${shop.id}`)}
-                  disabled={!shop.isOpen}
-                  style={{
-                    width: '100%',
-                    height: 38,
-                    background: shop.isOpen ? 'var(--primary)' : 'var(--border)',
-                    border: 'none',
-                    borderRadius: 10,
-                    color: shop.isOpen ? '#fff' : 'var(--text-light)',
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: shop.isOpen ? 'pointer' : 'not-allowed',
-                    fontFamily: 'Poppins',
-                  }}
-                >
-                  {shop.isOpen ? 'View Shop →' : 'Currently Closed'}
-                </button>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </section>

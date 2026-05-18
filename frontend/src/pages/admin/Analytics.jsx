@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../../services/api';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer,
   LineChart, Line, CartesianGrid,
@@ -29,11 +29,11 @@ export default function AdminAnalytics() {
           userGrowthRes,
           categoryRes
         ] = await Promise.all([
-          axios.get('/api/analytics/overview'),
-          axios.get('/api/analytics/over-time?period=monthly'),
-          axios.get('/api/analytics/top-products?limit=5'),
-          axios.get('/api/analytics/user-growth?period=monthly'),
-          axios.get('/api/analytics/category-distribution')
+          API.get('/analytics/overview'),
+          API.get('/analytics/over-time?period=monthly'),
+          API.get('/analytics/top-products?limit=5'),
+          API.get('/analytics/user-growth?period=monthly'),
+          API.get('/analytics/category-distribution')
         ]);
 
         setOverview(overviewRes.data);

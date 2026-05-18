@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import API from '../../services/api'
 
 const UNIVERSITIES = [
   'University of Moratuwa',
@@ -143,12 +144,19 @@ export default function StudentProfile() {
     }
     setSaving(true)
     try {
-      // TODO: replace with real API call
-      // await updateProfile(form)
-      await new Promise((r) => setTimeout(r, 800))
+      const res = await API.patch('/users/profile', {
+        name: form.name,
+        phone: form.phone,
+        university: form.university,
+        faculty: form.faculty,
+        studentId: form.studentId,
+      })
+      // Update localStorage so AuthContext reflects changes
+      const stored = JSON.parse(localStorage.getItem('user') || '{}')
+      localStorage.setItem('user', JSON.stringify({ ...stored, name: res.data.name, university: res.data.university }))
       showToast('Profile saved successfully!')
-    } catch {
-      showToast('Failed to save profile.', 'error')
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to save profile.', 'error')
     } finally {
       setSaving(false)
     }
@@ -170,12 +178,14 @@ export default function StudentProfile() {
     }
     setSaving(true)
     try {
-      // TODO: replace with real API call
-      await new Promise((r) => setTimeout(r, 800))
+      await API.post('/auth/changepassword', {
+        currentPassword: pwForm.currentPassword,
+        newPassword: pwForm.newPassword,
+      })
       setPwForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
       showToast('Password changed successfully!')
-    } catch {
-      showToast('Failed to change password.', 'error')
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to change password.', 'error')
     } finally {
       setSaving(false)
     }

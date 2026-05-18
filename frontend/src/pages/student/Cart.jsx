@@ -1,44 +1,8 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../../context/useCart.jsx'
+import API from '../../services/api'
 
-// ─── Preset delivery fees by shop ID ────────────────────────────
-const SHOP_DELIVERY = {
-  1: 50,
-  2: 30,
-  3: 25,
-  4: 50,
-  5: 40,
-}
-
-const SHOP_NAMES = {
-  1: "Mama's Kitchen",
-  2: 'Campus Prints',
-  3: 'NoteHub',
-  4: 'Quick Bites',
-  5: 'Lab Mart',
-}
-
-const SHOP_ICONS = {
-  1: '🍱',
-  2: '🖨️',
-  3: '📚',
-  4: '🥗',
-  5: '🔬',
-}
-
-function resolveShopName(item) {
-  return item.shop || SHOP_NAMES[item.shopId] || 'Unknown Shop'
-}
-
-function resolveShopIcon(item) {
-  return item.icon || SHOP_ICONS[item.shopId] || '🏪'
-}
-
-function resolveDeliveryFee(item) {
-  return item.shopId ? (SHOP_DELIVERY[item.shopId] ?? 0) : 0
-}
-
-// ─── Helpers ────────────────────────────────────────────────────
 const S = {
   card: {
     background: 'var(--bg-card)',
@@ -47,38 +11,70 @@ const S = {
     boxShadow: 'var(--shadow-sm)',
   },
   badge: (bg, color) => ({
-    background: bg,
-    color,
-    padding: '3px 10px',
-    borderRadius: 7,
-    fontSize: 12,
-    fontWeight: 700,
-    display: 'inline-block',
+    background: bg, color, padding: '3px 10px',
+    borderRadius: 7, fontSize: 12, fontWeight: 700, display: 'inline-block',
   }),
+}
+
+function resolveShopName(item) {
+  return item.shop || item.shopName || 'Unknown Shop'
 }
 
 export default function Cart() {
   const { cart, removeItem, setQty, addItem, clearCart } = useCart()
   const navigate = useNavigate()
+  const [placing, setPlacing] = useState(false)
+  const [error, setError] = useState(null)
 
-  // Group items by shop
+  // Group items by seller (shopId)
   const groups = cart.reduce((acc, item) => {
     const shopLabel = resolveShopName(item)
     if (!acc[shopLabel]) {
-      acc[shopLabel] = { shopLabel, icon: resolveShopIcon(item), items: [] }
+      acc[shopLabel] = { shopLabel, items: [] }
     }
     acc[shopLabel].items.push(item)
     return acc
   }, {})
 
   const subtotal = cart.reduce((sum, i) => sum + i.price * i.qty, 0)
-  const delivery = cart.reduce((sum, i) => sum + resolveDeliveryFee(i) * i.qty, 0)
-  const total = subtotal + delivery
+  const total = subtotal
 
-  const handlePay = () => {
-    alert(`Order placed successfully!\n\nTotal: Rs. ${total.toLocaleString()}\nItems: ${cart.length} product(s)\n${cart.reduce((s, i) => s + i.qty, 0)} unit(s)\n\nPayment confirmation will be shown here once the backend is connected.`)
-    clearCart()
-    navigate('/student/orders')
+  const handlePay = async () => {
+    if (cart.length === 0) return
+    setError(null)
+    setPlacing(true)
+
+    try {
+      // Group cart by seller — create one order per seller
+      const bySeller = cart.reduce((acc, item) => {
+        const sellerId = item.shopId || item.seller
+        if (!acc[sellerId]) acc[sellerId] = []
+        acc[sellerId].push(item)
+        return acc
+      }, {})
+
+      for (const [sellerId, items] of Object.entries(bySeller)) {
+        const orderTotal = items.reduce((s, i) => s + i.price * i.qty, 0)
+        await API.post('/orders', {
+          seller: sellerId,
+          items: items.map((i) => ({
+            product: i._id,
+            name: i.name,
+            qty: i.qty,
+            price: i.price,
+          })),
+          total: orderTotal,
+          note: '',
+        })
+      }
+
+      clearCart()
+      navigate('/student/orders')
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to place order. Please try again.')
+    } finally {
+      setPlacing(false)
+    }
   }
 
   // ── Empty state ────────────────────────────────────────────────
@@ -96,15 +92,9 @@ export default function Cart() {
           <button
             onClick={() => navigate('/student/home')}
             style={{
-              background: 'var(--primary)',
-              border: 'none',
-              borderRadius: 12,
-              color: '#fff',
-              padding: '12px 32px',
-              fontSize: 14,
-              fontWeight: 700,
-              cursor: 'pointer',
-              fontFamily: 'Poppins',
+              background: 'var(--primary)', border: 'none', borderRadius: 12,
+              color: '#fff', padding: '12px 32px', fontSize: 14,
+              fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins',
             }}
           >
             Browse Shops
@@ -122,19 +112,11 @@ export default function Cart() {
           <button
             onClick={() => navigate(-1)}
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 16px',
-              border: '1.5px solid var(--border)',
-              borderRadius: 10,
-              background: 'var(--bg-card)',
-              color: 'var(--text)',
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: 'pointer',
-              fontFamily: 'Poppins',
-              marginBottom: 12,
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '8px 16px', border: '1.5px solid var(--border)',
+              borderRadius: 10, background: 'var(--bg-card)', color: 'var(--text)',
+              fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              fontFamily: 'Poppins', marginBottom: 12,
             }}
           >
             ← Back
@@ -149,20 +131,25 @@ export default function Cart() {
         <button
           onClick={clearCart}
           style={{
-            padding: '8px 18px',
-            border: '1.5px solid var(--danger-bg)',
-            borderRadius: 10,
-            background: 'var(--danger-bg)',
-            color: 'var(--danger-text)',
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: 'pointer',
-            fontFamily: 'Poppins',
+            padding: '8px 18px', border: '1.5px solid var(--danger-bg)',
+            borderRadius: 10, background: 'var(--danger-bg)',
+            color: 'var(--danger-text)', fontSize: 13, fontWeight: 600,
+            cursor: 'pointer', fontFamily: 'Poppins',
           }}
         >
           Clear All
         </button>
       </div>
+
+      {error && (
+        <div style={{
+          background: 'var(--danger-bg)', border: '1px solid var(--danger-text)',
+          borderRadius: 10, padding: '12px 16px', marginBottom: 20,
+          fontSize: 13, color: 'var(--danger-text)', fontWeight: 600,
+        }}>
+          ❌ {error}
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', alignItems: 'flex-start' }}>
 
@@ -170,15 +157,8 @@ export default function Cart() {
         <div style={{ flex: '1 1 480px' }}>
           {Object.values(groups).map((group) => (
             <div key={group.shopLabel} style={{ marginBottom: 24 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  marginBottom: 14,
-                }}
-              >
-                <span style={{ fontSize: 24 }}>{group.icon}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <span style={{ fontSize: 24 }}>🏪</span>
                 <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)' }}>
                   {group.shopLabel}
                 </span>
@@ -187,109 +167,61 @@ export default function Cart() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {group.items.map((item) => (
                   <div
-                    key={item.id}
+                    key={item.id || item._id}
                     style={{
-                      ...S.card,
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '16px 20px',
-                      gap: 16,
+                      ...S.card, display: 'flex', alignItems: 'center',
+                      padding: '16px 20px', gap: 16,
                     }}
                   >
-                    {/* Icon placeholder */}
-                    <div
-                      style={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: 12,
-                        background: 'var(--bg-hover)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 24,
-                        flexShrink: 0,
-                      }}
-                    >
+                    <div style={{
+                      width: 56, height: 56, borderRadius: 12,
+                      background: 'var(--bg-hover)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 24, flexShrink: 0,
+                    }}>
                       📦
                     </div>
 
-                    {/* Info */}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          fontSize: 15,
-                          fontWeight: 700,
-                          color: 'var(--text)',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
+                      <div style={{
+                        fontSize: 15, fontWeight: 700, color: 'var(--text)',
+                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                      }}>
                         {item.name}
                       </div>
                       <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>
-                        {item.shop}
+                        Rs. {item.price} each
                       </div>
                     </div>
 
                     {/* Qty controls */}
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 8,
-                        flexShrink: 0,
-                      }}
-                    >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                       <button
-                        onClick={() => setQty(item.id, item.qty - 1)}
+                        onClick={() => setQty(item.id || item._id, item.qty - 1)}
                         style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: 8,
-                          border: '1.5px solid var(--border)',
-                          background: 'var(--bg-card)',
-                          color: 'var(--text-secondary)',
-                          fontSize: 18,
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontFamily: 'Poppins',
-                          lineHeight: 1,
+                          width: 32, height: 32, borderRadius: 8,
+                          border: '1.5px solid var(--border)', background: 'var(--bg-card)',
+                          color: 'var(--text-secondary)', fontSize: 18, fontWeight: 700,
+                          cursor: 'pointer', display: 'flex', alignItems: 'center',
+                          justifyContent: 'center', fontFamily: 'Poppins', lineHeight: 1,
                         }}
                       >
                         −
                       </button>
-                      <span
-                        style={{
-                          fontSize: 15,
-                          fontWeight: 700,
-                          color: 'var(--text)',
-                          minWidth: 24,
-                          textAlign: 'center',
-                        }}
-                      >
+                      <span style={{
+                        fontSize: 15, fontWeight: 700, color: 'var(--text)',
+                        minWidth: 24, textAlign: 'center',
+                      }}>
                         {item.qty}
                       </span>
                       <button
                         onClick={() => addItem(item)}
                         style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: 8,
-                          border: '1.5px solid var(--border)',
-                          background: 'var(--primary)',
-                          color: '#fff',
-                          fontSize: 16,
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontFamily: 'Poppins',
-                          lineHeight: 1,
+                          width: 32, height: 32, borderRadius: 8,
+                          border: '1.5px solid var(--border)', background: 'var(--primary)',
+                          color: '#fff', fontSize: 16, fontWeight: 700,
+                          cursor: 'pointer', display: 'flex', alignItems: 'center',
+                          justifyContent: 'center', fontFamily: 'Poppins', lineHeight: 1,
                         }}
                       >
                         +
@@ -297,38 +229,23 @@ export default function Cart() {
                     </div>
 
                     {/* Sub-total */}
-                    <div
-                      style={{
-                        fontSize: 15,
-                        fontWeight: 800,
-                        color: 'var(--text)',
-                        minWidth: 72,
-                        textAlign: 'right',
-                        flexShrink: 0,
-                      }}
-                    >
+                    <div style={{
+                      fontSize: 15, fontWeight: 800, color: 'var(--text)',
+                      minWidth: 72, textAlign: 'right', flexShrink: 0,
+                    }}>
                       Rs. {(item.price * item.qty).toLocaleString()}
                     </div>
 
-                    {/* Remove button */}
+                    {/* Remove */}
                     <button
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeItem(item.id || item._id)}
                       title="Remove item"
                       style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 8,
-                        border: 'none',
-                        background: 'var(--danger-bg)',
-                        color: 'var(--danger-text)',
-                        fontSize: 14,
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                        lineHeight: 1,
+                        width: 32, height: 32, borderRadius: 8, border: 'none',
+                        background: 'var(--danger-bg)', color: 'var(--danger-text)',
+                        fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        flexShrink: 0, lineHeight: 1,
                       }}
                     >
                       ×
@@ -342,14 +259,7 @@ export default function Cart() {
 
         {/* ── Order Summary ───────────────────────────────────────── */}
         <div style={{ flex: '0 1 340px' }}>
-          <div
-            style={{
-              ...S.card,
-              padding: '28px 24px',
-              position: 'sticky',
-              top: 88,
-            }}
-          >
+          <div style={{ ...S.card, padding: '28px 24px', position: 'sticky', top: 88 }}>
             <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text)', marginBottom: 20 }}>
               Order Summary
             </h2>
@@ -359,10 +269,6 @@ export default function Cart() {
                 <span>Subtotal ({cart.reduce((s, i) => s + i.qty, 0)} item{cart.reduce((s, i) => s + i.qty, 0) !== 1 ? 's' : ''})</span>
                 <span style={{ fontWeight: 700, color: 'var(--text)' }}>Rs. {subtotal.toLocaleString()}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--text-secondary)' }}>
-                <span>Delivery Fee</span>
-                <span style={{ fontWeight: 700, color: 'var(--text)' }}>Rs. {delivery.toLocaleString()}</span>
-              </div>
               <div style={{ height: '1px', background: 'var(--border)', marginTop: 4 }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 16, color: 'var(--text)', fontWeight: 800 }}>
                 <span>Total</span>
@@ -370,42 +276,26 @@ export default function Cart() {
               </div>
             </div>
 
-            {/* Delivery note */}
-            <div
-              style={{
-                fontSize: 12,
-                color: 'var(--text-muted)',
-                textAlign: 'center',
-                marginBottom: 16,
-                lineHeight: 1.5,
-              }}
-            >
-              Delivery fees vary per shop. Final charge confirmed at checkout.
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', marginBottom: 16, lineHeight: 1.5 }}>
+              Payment: Cash on Pickup at the shop.
             </div>
 
-            {/* Pay button */}
             <button
               onClick={handlePay}
+              disabled={placing}
               style={{
-                width: '100%',
-                height: 48,
-                background: 'linear-gradient(135deg, var(--secondary), #2d8a57)',
-                border: 'none',
-                borderRadius: 12,
-                color: '#fff',
-                fontSize: 15,
-                fontWeight: 800,
-                cursor: 'pointer',
-                fontFamily: 'Poppins',
-                transition: 'opacity 0.2s',
+                width: '100%', height: 48,
+                background: placing ? 'var(--border)' : 'linear-gradient(135deg, var(--secondary), #2d8a57)',
+                border: 'none', borderRadius: 12, color: '#fff',
+                fontSize: 15, fontWeight: 800, cursor: placing ? 'not-allowed' : 'pointer',
+                fontFamily: 'Poppins', transition: 'opacity 0.2s',
               }}
             >
-              Pay Now — Rs. {total.toLocaleString()}
+              {placing ? 'Placing Order...' : `Place Order — Rs. ${total.toLocaleString()}`}
             </button>
 
-            {/* Extra info */}
             <p style={{ fontSize: 12, color: 'var(--text-light)', textAlign: 'center', marginTop: 14 }}>
-              Est. delivery: 15–30 min per shop
+              Est. preparation: 10–30 min per shop
             </p>
           </div>
         </div>

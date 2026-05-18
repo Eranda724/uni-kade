@@ -1,140 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import API from '../../services/api'
 
-// ─── Mock Data ────────────────────────────────────────────────
-const INIT_ORDERS = [
-  {
-    id: '#ORD-001',
-    student: 'Kasun Perera',
-    phone: '077-111-2222',
-    items: [{ name: 'Rice & Curry', qty: 2, price: 190 }],
-    date: '2026-05-17',
-    time: '10:02 AM',
-    status: 'Completed',
-    note: '',
-    paymentMethod: 'Cash on Pickup',
-    paymentStatus: 'Paid',
-  },
-  {
-    id: '#ORD-002',
-    student: 'Nimali Silva',
-    phone: '071-333-4444',
-    items: [
-      { name: 'Kottu', qty: 1, price: 250 },
-      { name: 'Fresh Juice', qty: 1, price: 60 },
-    ],
-    date: '2026-05-17',
-    time: '10:08 AM',
-    status: 'Completed',
-    note: '',
-    paymentMethod: 'Cash on Pickup',
-    paymentStatus: 'Paid',
-  },
-  {
-    id: '#ORD-003',
-    student: 'Ashan Fernando',
-    phone: '076-555-6666',
-    items: [{ name: 'Short Eats', qty: 4, price: 40 }],
-    date: '2026-05-16',
-    time: '10:14 AM',
-    status: 'Completed',
-    note: '',
-    paymentMethod: 'Cash on Pickup',
-    paymentStatus: 'Paid',
-  },
-  {
-    id: '#ORD-004',
-    student: 'Dinusha Ranasinghe',
-    phone: '070-777-8888',
-    items: [{ name: 'Fried Rice', qty: 1, price: 220 }],
-    date: '2026-05-15',
-    time: '9:45 AM',
-    status: 'Completed',
-    note: '',
-    paymentMethod: 'Cash on Pickup',
-    paymentStatus: 'Paid',
-  },
-  {
-    id: '#ORD-005',
-    student: 'Chamara Bandara',
-    phone: '078-999-0000',
-    items: [
-      { name: 'Noodles', qty: 1, price: 180 },
-      { name: 'Water', qty: 2, price: 30 },
-    ],
-    date: '2026-05-14',
-    time: '9:30 AM',
-    status: 'Completed',
-    note: '',
-    paymentMethod: 'Cash on Pickup',
-    paymentStatus: 'Paid',
-  },
-  {
-    id: '#ORD-006',
-    student: 'Samantha Kumari',
-    phone: '071-222-3333',
-    items: [{ name: 'Vegetable Rice', qty: 1, price: 180 }],
-    date: '2026-05-13',
-    time: '2:15 PM',
-    status: 'Completed',
-    note: '',
-    paymentMethod: 'Cash on Pickup',
-    paymentStatus: 'Paid',
-  },
-  {
-    id: '#ORD-007',
-    student: 'Rajitha Perera',
-    phone: '077-333-4444',
-    items: [
-      { name: 'Chicken Kottu', qty: 2, price: 280 },
-      { name: 'Iced Coffee', qty: 1, price: 70 },
-    ],
-    date: '2026-05-12',
-    time: '11:30 AM',
-    status: 'Completed',
-    note: '',
-    paymentMethod: 'Cash on Pickup',
-    paymentStatus: 'Paid',
-  },
-  {
-    id: '#ORD-008',
-    student: 'Madhavi Silva',
-    phone: '076-444-5555',
-    items: [{ name: 'Pasta', qty: 1, price: 250 }],
-    date: '2026-05-10',
-    time: '3:45 PM',
-    status: 'Completed',
-    note: '',
-    paymentMethod: 'Cash on Pickup',
-    paymentStatus: 'Paid',
-  },
-  {
-    id: '#ORD-009',
-    student: 'Thilina Gunasekara',
-    phone: '075-555-6666',
-    items: [
-      { name: 'Sandwich', qty: 3, price: 120 },
-      { name: 'Tea', qty: 2, price: 40 },
-    ],
-    date: '2026-05-05',
-    time: '8:20 AM',
-    status: 'Completed',
-    note: '',
-    paymentMethod: 'Cash on Pickup',
-    paymentStatus: 'Paid',
-  },
-  {
-    id: '#ORD-010',
-    student: 'Nadeeka Rajapakse',
-    phone: '072-666-7777',
-    items: [{ name: 'Wrap', qty: 2, price: 150 }],
-    date: '2026-04-28',
-    time: '1:15 PM',
-    status: 'Completed',
-    note: '',
-    paymentMethod: 'Cash on Pickup',
-    paymentStatus: 'Paid',
-  },
-]
 
 // ─── Status config ─────────────────────────────────────────────
 const STATUS_STYLE = {
@@ -253,7 +119,7 @@ function RejectModal({ order, onClose, onConfirm }) {
             Keep Order
           </button>
           <button
-            onClick={() => onConfirm(order.id, reason || 'Cancelled by seller')}
+            onClick={() => onConfirm(order._id, reason || 'Cancelled by seller')}
             style={{
               flex: 1,
               height: 44,
@@ -380,29 +246,50 @@ function OrderDetail({ order, total }) {
 
 // ─── Main Component ───────────────────────────────────────────
 export default function SellerOrders() {
-  const [orders, setOrders] = useState(INIT_ORDERS)
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [tab, setTab] = useState('All')
   const [expanded, setExpanded] = useState(null)
   const [rejectTarget, setRejectTarget] = useState(null)
 
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true)
+        const res = await API.get('/orders')
+        setOrders(res.data)
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load orders')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchOrders()
+  }, [])
+
   // ── Status update ──────────────────────────────────────────
-  const moveNext = (id) => {
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id !== id) return o
-        const action = NEXT_ACTION[o.status]
-        return action ? { ...o, status: action.next } : o
-      }),
-    )
+  const moveNext = async (id) => {
+    const order = orders.find(o => o._id === id)
+    if (!order) return
+    const action = NEXT_ACTION[order.status]
+    if (!action) return
+    try {
+      const res = await API.patch(`/orders/${id}/status`, { status: action.next })
+      setOrders(prev => prev.map(o => o._id === id ? res.data : o))
+    } catch (err) {
+      console.error('Status update error:', err)
+    }
   }
 
-  const cancelOrder = (id, reason) => {
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === id ? { ...o, status: 'Cancelled', cancelReason: reason } : o,
-      ),
-    )
-    setRejectTarget(null)
+  const cancelOrder = async (id, reason) => {
+    try {
+      const res = await API.patch(`/orders/${id}/status`, { status: 'Cancelled' })
+      setOrders(prev => prev.map(o => o._id === id ? { ...res.data, cancelReason: reason } : o))
+      setRejectTarget(null)
+    } catch (err) {
+      console.error('Cancel order error:', err)
+    }
   }
 
   // ── Filter ─────────────────────────────────────────────────
@@ -520,24 +407,26 @@ border: tab === s ? 'none' : '1.5px solid var(--border)',
           </thead>
           <tbody>
             {visible.map((order) => {
-              const total = order.items.reduce((s, it) => s + it.price * it.qty, 0)
+              const total = order.total || order.items.reduce((s, it) => s + it.price * it.qty, 0)
               const action = NEXT_ACTION[order.status]
-              const isOpen = expanded === order.id
+              const isOpen = expanded === order._id
               const canReject = ['Pending', 'Preparing'].includes(order.status)
 
               return (
                 <>
                   <tr
-                    key={order.id}
+                    key={order._id}
                     style={{ borderBottom: '1px solid var(--border-light)' }}
                   >
                     <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
-                      <div style={{ fontWeight: 800, color: 'var(--text)' }}>{order.id}</div>
-                      <div style={{ fontSize: 12, color: 'var(--text-light)' }}>{order.time}</div>
+                      <div style={{ fontWeight: 800, color: 'var(--text)' }}>#{order._id.slice(-6).toUpperCase()}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-light)' }}>
+                        {new Date(order.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                      </div>
                     </td>
                     <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
-                      <div style={{ fontWeight: 700, color: 'var(--text)' }}>{order.student}</div>
-                      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{order.phone}</div>
+                      <div style={{ fontWeight: 700, color: 'var(--text)' }}>{order.student?.name || 'Student'}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{order.student?.phone || ''}</div>
                     </td>
                     <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
                       <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
@@ -552,28 +441,30 @@ border: tab === s ? 'none' : '1.5px solid var(--border)',
                     <td style={{ padding: '12px 16px', verticalAlign: 'middle', textAlign: 'right', fontWeight: 800 }}>
                       Rs. {total}
                     </td>
-                    <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>{order.time}</td>
+                    <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+                      {new Date(order.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                    </td>
                     <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
                       <span style={{ padding: '4px 10px', borderRadius: 8, fontWeight: 700, fontSize: 12, ...STATUS_STYLE[order.status] }}>{order.status}</span>
                     </td>
                     <td style={{ padding: '12px 16px', verticalAlign: 'middle', textAlign: 'center' }}>
                       <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
                         {action && (
-                          <button onClick={() => moveNext(order.id)} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: 'var(--primary)', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>{action.label}</button>
+                          <button onClick={() => moveNext(order._id)} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: 'var(--primary)', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>{action.label}</button>
                         )}
                         {canReject && (
                           <button onClick={() => setRejectTarget(order)} style={{ padding: '8px 10px', borderRadius: 8, border: '1.5px solid var(--danger-text)', background: 'var(--bg-card)', color: 'var(--danger-text)', fontWeight: 700, cursor: 'pointer' }}>✕</button>
                         )}
                         {order.status === 'Completed' && <span style={{ fontSize: 18 }}>✅</span>}
-                        <button onClick={() => setExpanded(isOpen ? null : order.id)} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)', cursor: 'pointer' }}>{isOpen ? '▴' : '▾'}</button>
+                        <button onClick={() => setExpanded(isOpen ? null : order._id)} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)', cursor: 'pointer' }}>{isOpen ? '▴' : '▾'}</button>
                       </div>
                     </td>
                   </tr>
 
                   {isOpen && (
-                    <tr>
+                    <tr key={order._id + '-detail'}>
                       <td colSpan={7} style={{ padding: 0 }}>
-                        <OrderDetail order={order} total={total} />
+                        <OrderDetail order={{ ...order, student: order.student?.name || 'Student', phone: order.student?.phone || '' }} total={total} />
                       </td>
                     </tr>
                   )}
@@ -589,7 +480,7 @@ border: tab === s ? 'none' : '1.5px solid var(--border)',
         <RejectModal
           order={rejectTarget}
           onClose={() => setRejectTarget(null)}
-          onConfirm={cancelOrder}
+          onConfirm={(id, reason) => cancelOrder(id, reason)}
         />
       )}
     </div>

@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import API from '../../services/api'
 
 // ─── Constants ────────────────────────────────────────────────
 const UNIVERSITIES = [
@@ -114,21 +115,25 @@ export default function SellerProfile() {
   const navigate = useNavigate()
   const logoRef = useRef()
 
-  const [activeTab, setActiveTab] = useState('shop') // 'shop' | 'password'
+  const [activeTab, setActiveTab] = useState('shop')
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState({ msg: '', type: 'success' })
 
+  // ── Real shop stats ─────────────────────────────────────────
+  const [stats, setStats] = useState(null)
+  const [statsLoading, setStatsLoading] = useState(true)
+
   // ── Shop form ────────────────────────────────────────────────
   const [form, setForm] = useState({
-    shopName: user?.shopName || 'My Shop',
-    description: 'Fresh and delicious campus food, made with love.',
-    phone: user?.phone || '+94 77 000 0000',
-    university: user?.university || '',
-    category: user?.category || 'Food',
-    facultyArea: 'Main Canteen Block',
-    openTime: '07:00 AM',
-    closeTime: '05:00 PM',
-    logo: null,
+    shopName:    user?.shopName    || '',
+    description: user?.shopDescription || '',
+    phone:       user?.phone       || '',
+    university:  user?.university  || '',
+    category:    user?.category    || 'Food',
+    facultyArea: user?.facultyArea || '',
+    openTime:    '07:00 AM',
+    closeTime:   '05:00 PM',
+    logo:        null,
     logoPreview: null,
   })
 
@@ -147,6 +152,49 @@ export default function SellerProfile() {
     setToast({ msg, type })
     setTimeout(() => setToast({ msg: '', type: 'success' }), 3500)
   }
+
+  // ── Fetch real profile + stats on mount ──────────────────────
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Re-hydrate form from backend to pick up any changes made elsewhere
+        const profileRes = await API.get(`/users/${user?._id || user?.id}`)
+        const u = profileRes.data
+        setForm(f => ({
+          ...f,
+          shopName:    u.shopName    || f.shopName,
+          description: u.shopDescription || f.description,
+          phone:       u.phone       || f.phone,
+          university:  u.university  || f.university,
+          category:    u.category    || f.category,
+          facultyArea: u.facultyArea || f.facultyArea,
+        }))
+
+        // Fetch orders for real stats
+        setStatsLoading(true)
+        const [ordersRes, productsRes] = await Promise.all([
+          API.get('/orders'),
+          API.get('/products'),
+        ])
+        const orders = ordersRes.data
+        const totalRevenue = orders.reduce((s, o) => s + (o.total || 0), 0)
+        const activeSince = u.createdAt
+          ? new Date(u.createdAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
+          : '—'
+        setStats({
+          totalOrders:  orders.length,
+          totalRevenue,
+          totalProducts: productsRes.data.length,
+          activeSince,
+        })
+      } catch (err) {
+        console.error('Profile load error:', err)
+      } finally {
+        setStatsLoading(false)
+      }
+    }
+    loadData()
+  }, [])
 
   // ── Logo upload ──────────────────────────────────────────────
   const handleLogo = (e) => {
@@ -174,10 +222,20 @@ export default function SellerProfile() {
     }
     setSaving(true)
     try {
-      await new Promise((r) => setTimeout(r, 800)) // TODO: PUT /api/sellers/:id
+      const res = await API.patch('/users/profile', {
+        shopName: form.shopName,
+        shopDescription: form.description,
+        phone: form.phone,
+        university: form.university,
+        category: form.category,
+        facultyArea: form.facultyArea,
+      })
+      // Sync to localStorage so AuthContext stays updated
+      const stored = JSON.parse(localStorage.getItem('user') || '{}')
+      localStorage.setItem('user', JSON.stringify({ ...stored, shopName: res.data.shopName }))
       showToast('Shop profile saved successfully!')
-    } catch {
-      showToast('Failed to save profile.', 'error')
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to save profile.', 'error')
     } finally {
       setSaving(false)
     }
@@ -199,11 +257,14 @@ export default function SellerProfile() {
     }
     setSaving(true)
     try {
-      await new Promise((r) => setTimeout(r, 800)) // TODO: PUT /api/auth/password
+      await API.post('/auth/changepassword', {
+        currentPassword: pwForm.current,
+        newPassword: pwForm.newPw,
+      })
       setPwForm({ current: '', newPw: '', confirm: '' })
       showToast('Password changed successfully!')
-    } catch {
-      showToast('Failed to change password.', 'error')
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to change password.', 'error')
     } finally {
       setSaving(false)
     }
@@ -363,28 +424,32 @@ export default function SellerProfile() {
             >
               Shop Stats
             </div>
-            {[
-              { label: 'Total Orders', value: '482' },
-              { label: 'Total Revenue', value: 'Rs. 94,200' },
-              { label: 'Avg. Rating', value: '4.8 ⭐' },
-              { label: 'Active Since', value: 'Jan 2025' },
-            ].map((s) => (
-              <div
-                key={s.label}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  padding: '9px 0',
-                  borderBottom: '1px solid var(--border-light)',
-                  fontSize: 13,
-                }}
-              >
-                <span style={{ color: 'var(--text-muted)' }}>{s.label}</span>
-                <span style={{ fontWeight: 700, color: 'var(--text)' }}>
-                  {s.value}
-                </span>
+            {statsLoading ? (
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', padding: '12px 0' }}>
+                Loading stats...
               </div>
-            ))}
+            ) : stats ? (
+              [
+                { label: 'Total Orders',   value: stats.totalOrders },
+                { label: 'Total Revenue',  value: `Rs. ${stats.totalRevenue.toLocaleString()}` },
+                { label: 'Total Products', value: stats.totalProducts },
+                { label: 'Active Since',   value: stats.activeSince },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    padding: '9px 0',
+                    borderBottom: '1px solid var(--border-light)',
+                    fontSize: 13,
+                  }}
+                >
+                  <span style={{ color: 'var(--text-muted)' }}>{s.label}</span>
+                  <span style={{ fontWeight: 700, color: 'var(--text)' }}>{s.value}</span>
+                </div>
+              ))
+            ) : null}
 
             {/* Logout */}
             <button

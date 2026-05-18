@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../../context/AuthContext'
+import API from '../../services/api'
 
 // ─── Constants ────────────────────────────────────────────────
 const CATEGORIES = [
@@ -19,65 +20,6 @@ const BLANK = {
   image: null,
   imagePreview: null,
 }
-
-// ─── Mock products (replace with API data) ────────────────────
-const MOCK_PRODUCTS = [
-  {
-    _id: '1',
-    name: 'Rice & Curry',
-    category: 'Food',
-    price: 190,
-    description: 'Home style rice & curry',
-    prepTime: 10,
-    active: true,
-    ordersCount: 48,
-    image: null,
-  },
-  {
-    _id: '2',
-    name: 'Kottu Roti',
-    category: 'Food',
-    price: 250,
-    description: 'Spicy kottu with egg',
-    prepTime: 12,
-    active: true,
-    ordersCount: 36,
-    image: null,
-  },
-  {
-    _id: '3',
-    name: 'Fresh Juice',
-    category: 'Drinks',
-    price: 80,
-    description: 'Mixed fruit juice',
-    prepTime: 3,
-    active: true,
-    ordersCount: 22,
-    image: null,
-  },
-  {
-    _id: '4',
-    name: 'Short Eats',
-    category: 'Snacks',
-    price: 40,
-    description: 'Per piece',
-    prepTime: 2,
-    active: false,
-    ordersCount: 15,
-    image: null,
-  },
-  {
-    _id: '5',
-    name: 'A4 Paper (500)',
-    category: 'Stationery',
-    price: 450,
-    description: 'White A4 ream',
-    prepTime: 0,
-    active: true,
-    ordersCount: 11,
-    image: null,
-  },
-]
 
 // ─── Reusable styles ──────────────────────────────────────────
 const inpStyle = {
@@ -209,31 +151,28 @@ function ProductModal({ mode, initial, onClose, onSave }) {
   }
 
   const handleSubmit = async () => {
-    if (!form.name.trim()) {
-      setError('Product name is required')
-      return
-    }
-    if (!form.price) {
-      setError('Price is required')
-      return
-    }
-    if (Number(form.price) <= 0) {
-      setError('Price must be greater than 0')
-      return
-    }
+    if (!form.name.trim()) { setError('Product name is required'); return }
+    if (!form.price) { setError('Price is required'); return }
+    if (Number(form.price) <= 0) { setError('Price must be greater than 0'); return }
     setSaving(true)
     try {
-      await new Promise((r) => setTimeout(r, 700)) // TODO: real API call
-      onSave({
-        ...form,
-        _id: initial?._id || String(Date.now()),
+      const payload = {
+        name: form.name,
+        category: form.category,
         price: Number(form.price),
-        prepTime: Number(form.prepTime) || 0,
-        active: true,
-        ordersCount: initial?.ordersCount || 0,
-      })
-    } catch {
-      setError('Failed to save product.')
+        description: form.description,
+      }
+      let saved
+      if (mode === 'add') {
+        const res = await API.post('/products', payload)
+        saved = res.data
+      } else {
+        const res = await API.patch(`/products/${initial._id}`, payload)
+        saved = res.data
+      }
+      onSave(saved)
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to save product.')
     } finally {
       setSaving(false)
     }
@@ -462,18 +401,30 @@ function ProductModal({ mode, initial, onClose, onSave }) {
   )
 }
 
-// ─── Main Component ───────────────────────────────────────────
+// ─── Main Component ──────────────────────────────────────────────
 export default function SellerProducts() {
   const { token } = useAuth()
-  const [products, setProducts] = useState(MOCK_PRODUCTS)
-  const [loading, setLoading] = useState(false)
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [search, setSearch] = useState('')
   const [catFilter, setCatFilter] = useState('All')
-  const [modal, setModal] = useState(null) // null | { mode: 'add' } | { mode: 'edit', product }
+  const [modal, setModal] = useState(null)
   const [delTarget, setDelTarget] = useState(null)
 
-  // TODO: replace with real API
-  // useEffect(() => { fetchProducts() }, [])
+  const fetchProducts = async () => {
+    try {
+      setLoading(true)
+      const res = await API.get('/products')
+      setProducts(res.data)
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load products')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { fetchProducts() }, [])
 
   // ── Filter ─────────────────────────────────────────────────
   const filtered = products.filter(
@@ -483,30 +434,36 @@ export default function SellerProducts() {
   )
 
   // ── Toggle available ────────────────────────────────────────
-  const toggleActive = (id) => {
-    setProducts((prev) =>
-      prev.map((p) => (p._id === id ? { ...p, active: !p.active } : p)),
-    )
-    // TODO: PATCH /api/products/:id/availability
+  const toggleActive = async (id) => {
+    const product = products.find(p => p._id === id)
+    if (!product) return
+    try {
+      const res = await API.patch(`/products/${id}`, { active: !product.active })
+      setProducts(prev => prev.map(p => p._id === id ? res.data : p))
+    } catch (err) {
+      console.error('Toggle error:', err)
+    }
   }
 
   // ── Save (add or edit) ──────────────────────────────────────
   const handleSave = (product) => {
     if (modal?.mode === 'add') {
-      setProducts((prev) => [product, ...prev])
+      setProducts(prev => [product, ...prev])
     } else {
-      setProducts((prev) =>
-        prev.map((p) => (p._id === product._id ? product : p)),
-      )
+      setProducts(prev => prev.map(p => p._id === product._id ? product : p))
     }
     setModal(null)
   }
 
   // ── Delete ──────────────────────────────────────────────────
-  const handleDelete = (id) => {
-    setProducts((prev) => prev.filter((p) => p._id !== id))
-    setDelTarget(null)
-    // TODO: DELETE /api/products/:id
+  const handleDelete = async (id) => {
+    try {
+      await API.delete(`/products/${id}`)
+      setProducts(prev => prev.filter(p => p._id !== id))
+      setDelTarget(null)
+    } catch (err) {
+      console.error('Delete error:', err)
+    }
   }
 
   const activeCount = products.filter((p) => p.active).length

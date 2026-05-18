@@ -18,6 +18,8 @@ const userSchema = new mongoose.Schema({
   studentId: { type: String },
   // status for sellers (pending approval)
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+  // seller shop open/close toggle
+  isOpen: { type: Boolean, default: true },
 }, { timestamps: true })
 
 userSchema.pre('save', async function() {

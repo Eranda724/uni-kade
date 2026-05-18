@@ -7,7 +7,8 @@ router.route('/')
   .post(protect, authorize('student'), addOrderItems)
   .get(protect, getOrders)
 
+// Allow both seller and admin to update order status
 router.route('/:id/status')
-  .patch(protect, authorize('seller'), updateOrderStatus)
+  .patch(protect, authorize('seller', 'admin'), updateOrderStatus)
 
 module.exports = router

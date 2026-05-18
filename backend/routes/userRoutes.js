@@ -1,18 +1,31 @@
 const express = require('express')
 const router = express.Router()
-const { getActiveShops, updateUserProfile, getAdminStats, getUserById } = require('../controllers/userController')
+const {
+  getActiveShops,
+  getAllUsers,
+  getUserById,
+  updateUserProfile,
+  updateSellerStatus,
+  getAdminStats,
+} = require('../controllers/userController')
 const { protect, authorize } = require('../middleware/authMiddleware')
 
-router.route('/shops')
-  .get(protect, authorize('student'), getActiveShops)
+// Student: browse approved shops
+router.get('/shops', protect, authorize('student'), getActiveShops)
 
-router.route('/profile')
-  .patch(protect, updateUserProfile)
+// Admin: platform stats
+router.get('/admin/stats', protect, authorize('admin'), getAdminStats)
 
-router.route('/admin/stats')
-  .get(protect, authorize('admin'), getAdminStats)
+// Admin: list all users (with optional ?role=seller&status=pending filters)
+router.get('/', protect, authorize('admin'), getAllUsers)
 
-router.route('/:id')
-  .get(getUserById)
+// Any authenticated user: update own profile
+router.patch('/profile', protect, updateUserProfile)
+
+// Admin: change seller status (approved / rejected)
+router.patch('/:id/status', protect, authorize('admin'), updateSellerStatus)
+
+// Public: get user/shop by ID (for shop page)
+router.get('/:id', getUserById)
 
 module.exports = router
